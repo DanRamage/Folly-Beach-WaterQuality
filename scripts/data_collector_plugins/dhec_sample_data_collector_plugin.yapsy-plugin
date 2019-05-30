@@ -1,0 +1,37 @@
+[Core]
+Name = DHEC Sample Data Collector
+Module = dhec_sample_data_collector_plugin
+
+[Documentation]
+Author = Dan Ramage
+Version = 0.1
+Website = http://howsthebeach.org
+Description = Requests the sample data and station metadata from DHEC.
+
+[logging]
+scraperConfigFile = /home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logconf/dhec_scraper.conf
+handlerConfigFile = /home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logconf/dhec_scraper.conf
+
+[websettings]
+#baseAdvisoryPageUrl=http://www.scdhec.gov/environment/water/beachdata
+baseAdvisoryPageUrl=https://gis.dhec.sc.gov/beachservice/beachservice.asmx?wsdl
+jsonFileURL=http://129.252.139.124/mapping/xenia/feeds/dhec/monitorstations/
+dhec_rest_url=https://gis.dhec.sc.gov/arcgis/rest/services/environment/BeachMonitoring/MapServer/1/query?f=json&where=1%3D1&returnGeometry=true&spatialRel=esriSpatialRelIntersects&outFields=*
+
+[dhecDatabaseSettings]
+sqliteDB=/home/xeniaprod/scripts/dhec/dhec.db
+
+[output]
+outputDirectory=/mnt/wq_feeds/follybeach/monitorstations
+jsonfile=/mnt/wq_feeds/follybeach/monitorstations/beachAdvisoryResults.json
+
+[stationData]
+stationGeoJsonFile=/mnt/wq_feeds/follybeach/monitorstations/stationsGeoJSON.json
+stationWQHistoryFile=/mnt/wq_feeds/follybeach/monitorstations/historicalWQ.json
+
+[sample_data_rest]
+url=http://dev.howsthebeach.org/station_data/follybeach/{station_name}?sampledate={date}&value={value}
+
+[boundaries_settings]
+boundaries_file=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/boundaries.csv
+sample_sites=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/sampling_stations_full.csv

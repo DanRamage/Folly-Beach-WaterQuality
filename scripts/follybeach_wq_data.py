@@ -22,7 +22,7 @@ from xenia import qaqcTestFlags
 from unitsConversion import uomconversionFunctions
 
 
-class chs_wq_data(wq_data):
+class follybeach_wq_data(wq_data):
   """
   Function: __init__
   Purpose: Initializes the class.
@@ -59,31 +59,6 @@ class chs_wq_data(wq_data):
 
     self.units_conversion = uomconversionFunctions(kwargs['units_file'])
 
-    self.nos_stations = ['nos.8665530.WL']
-    self.nos_variables = [('wind_speed', 'm_s-1', None),
-                          ('water_temperature', 'celsius', None)]
-    self.usgs_stations = ['usgs.021720709.wq', 'usgs.021720869.wq', 'usgs.021720710.wq', 'usgs.021720698.wq',
-                          'usgs.0217206935.wq', 'usgs.021720677.wq']
-    self.usgs_variables = [('water_conductivity', 'mS_cm-1', 'uS_cm-1'),
-                           ('salinity', 'psu', None),
-                           ('gage_height', 'm', None),
-                           ('water_temperature', 'celsius', None),
-                           ('oxygen_concentration', 'mg_L-1', None)]
-
-  """
-  def __del__(self):
-    if self.logger:
-      self.logger.debug("Closing connection to xenia db")
-    self.xenia_db.DB.close()
-
-    if self.logger:
-      self.logger.debug("Closing connection to thredds endpoint.")
-    self.ncObj.close()
-
-    if self.logger:
-      self.logger.debug("Closing connection to hycom endpoint.")
-    self.hycom_model.close()
-  """
 
   def reset(self, **kwargs):
     self.site = kwargs['site']
@@ -108,19 +83,6 @@ class chs_wq_data(wq_data):
       self.logger.debug("Creating and initializing data dict.")
 
     if not reset_site_specific_data_only:
-      for station in self.nos_stations:
-        for variable in self.nos_variables:
-          var_name = '%s_%s' % (station.replace('.', '_'), variable[0])
-          wq_tests_data[var_name] = wq_defines.NO_DATA
-          if variable[0] == 'wind_speed':
-            var_name = '%s_%s' % (station.replace('.', '_'), 'wind_from_direction')
-            wq_tests_data[var_name] = wq_defines.NO_DATA
-
-      for station in self.usgs_stations:
-        for variable in self.usgs_variables:
-          var_name = '%s_%s' % (station.replace('.', '_'), variable[0])
-          wq_tests_data[var_name] = wq_defines.NO_DATA
-
 
       for tide_offset in self.tide_offset_settings:
         # Build variables for the base tide station. Only add it if we
@@ -145,25 +107,6 @@ class chs_wq_data(wq_data):
           var_name = 'tide_lo_%s' % (tide_offset['offset_tide_station'])
           wq_tests_data[var_name] = wq_defines.NO_DATA
 
-      """
-      # Build variables for the base tide station.
-      var_name = 'tide_range_%s' % (self.tide_station)
-      wq_tests_data[var_name] = wq_defines.NO_DATA
-      var_name = 'tide_hi_%s' % (self.tide_station)
-      wq_tests_data[var_name] = wq_defines.NO_DATA
-      var_name = 'tide_lo_%s' % (self.tide_station)
-      wq_tests_data[var_name] = wq_defines.NO_DATA
-      var_name = 'tide_stage_%s' % (self.tide_station)
-      wq_tests_data[var_name] = wq_defines.NO_DATA
-  
-      # Build variables for the subordinate tide station.
-      var_name = 'tide_range_%s' % (self.tide_offset_settings['tide_station'])
-      wq_tests_data[var_name] = wq_defines.NO_DATA
-      var_name = 'tide_hi_%s' % (self.tide_offset_settings['tide_station'])
-      wq_tests_data[var_name] = wq_defines.NO_DATA
-      var_name = 'tide_lo_%s' % (self.tide_offset_settings['tide_station'])
-      wq_tests_data[var_name] = wq_defines.NO_DATA
-      """
     for boundary in self.site.contained_by:
       if len(boundary.name):
         for prev_hours in range(24, 192, 24):
@@ -208,6 +151,7 @@ class chs_wq_data(wq_data):
 
     self.initialize_return_data(wq_tests_data, reset_site_specific_data_only)
 
+    '''
     if not reset_site_specific_data_only:
       for station in self.usgs_stations:
         for variable in self.usgs_variables:
@@ -221,7 +165,7 @@ class chs_wq_data(wq_data):
 
     self.get_nexrad_data(start_date, wq_tests_data)
     self.get_tide_data(start_date, wq_tests_data)
-
+    '''
 
     if self.logger:
       self.logger.debug("Site: %s Finished query data for datetime: %s" % (self.site.name, start_date))

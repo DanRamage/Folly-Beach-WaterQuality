@@ -46,11 +46,12 @@ def main():
         wq_sites.load_sites(file_name=sites_location_file, boundary_file=None)
 
         logger.debug("Creating dhec sample query object.")
-        advisoryObj = waterQualityAdvisory(options.soap_url, True)
-
         station_list = []
         for site in wq_sites:
             station_list.append(site.name)
+
+        advisoryObj = waterQualityAdvisory(options.soap_url, True)
+
 
         if options.get_sample_data:
             year_list = []
@@ -60,6 +61,7 @@ def main():
             data = advisoryObj.get_sample_data(station_list, year_list)
             for station in station_list:
                 full_path = os.path.join(options.sample_data_file, "%s.csv" % (station))
+                logger.debug("Saving file: %s" % (full_path))
                 with open(full_path, "w") as sample_file:
                     sample_file.writelines('Station,Date,Value\n')
                     station_data = data[station]
