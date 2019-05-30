@@ -14,7 +14,7 @@ handlerConfigFile = /home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logco
 
 [websettings]
 #baseAdvisoryPageUrl=http://www.scdhec.gov/environment/water/beachdata
-baseAdvisoryPageUrl=https://gis.dhec.sc.gov/beachservice/beachservice.asmx?wsdl
+dhec_soap_url=https://gis.dhec.sc.gov/beachservice/beachservice.asmx?wsdl
 jsonFileURL=http://129.252.139.124/mapping/xenia/feeds/dhec/monitorstations/
 dhec_rest_url=https://gis.dhec.sc.gov/arcgis/rest/services/environment/BeachMonitoring/MapServer/1/query?f=json&where=1%3D1&returnGeometry=true&spatialRel=esriSpatialRelIntersects&outFields=*
 
