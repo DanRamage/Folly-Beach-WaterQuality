@@ -117,7 +117,7 @@ class dhec_sample_data_collector_plugin(data_collector_plugin):
             wq_sample.value = rec['value']
             wq_data_collection.append(wq_sample)
 
-        json_results_file = os.path.join(json_output_path, 'follybeach_beach_advisories.json')
+        json_results_file = os.path.join(json_output_path, 'beach_advisories.json')
         logger.debug("Creating beach advisories file: %s" % (json_results_file))
         try:
           current_advisories = wq_advisories_file(wq_sites)
