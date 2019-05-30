@@ -9,8 +9,8 @@ Website = http://howsthebeach.org
 Description = Requests the sample data and station metadata from DHEC.
 
 [logging]
-scraperConfigFile = /home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logconf/dhec_scraper.conf
-handlerConfigFile = /home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logconf/dhec_scraper.conf
+scraperConfigFile = /home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logconf/folly_dhec_scraper.conf
+handlerConfigFile = /home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logconf/folly_dhec_scraper.conf
 
 [websettings]
 #baseAdvisoryPageUrl=http://www.scdhec.gov/environment/water/beachdata
