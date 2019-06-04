@@ -4,6 +4,10 @@ from wqHistoricalData import station_geometry,sampling_sites,geometry_list
 import csv
 from wq_sites import wq_sample_sites, wq_site
 
+class folly_wq_site(wq_site):
+  def __init__(self, **kwargs):
+    wq_site.__init__(self, **kwargs)
+    self.run_model = kwargs.get('run_model', True)
 
 class folly_wq_sites(wq_sample_sites):
   def __init(self, **kwargs):
@@ -17,7 +21,7 @@ class folly_wq_sites(wq_sample_sites):
           wq_boundaries.load(kwargs['boundary_file'])
 
       try:
-        header_row = ["WKT","EPAbeachID","SPLocation","Description","County","Boundary","ExtentsWKT"]
+        header_row = ["WKT","EPAbeachID","SPLocation","Description","County","Boundary","RunModel"]
         if self.logger:
           self.logger.debug("Reading sample sites file: %s" % (kwargs['file_name']))
 
@@ -36,14 +40,12 @@ class folly_wq_sites(wq_sample_sites):
             if station is None:
               add_site = True
               extents_wkt = None
-              if 'ExtentsWKT' in row:
-                extents_wkt = row['ExtentsWKT']
-              station = wq_site(name=row['SPLocation'],
+              station = folly_wq_site(name=row['SPLocation'],
                                         wkt=row['WKT'],
                                         epa_id=row['EPAbeachID'],
                                         description=row['Description'],
                                         county=row['County'],
-                                        extentswkt=extents_wkt)
+                                        run_model=row['RunModel'])
               if self.logger:
                 self.logger.debug("Processing sample site: %s" % (row['SPLocation']))
               self.append(station)
