@@ -155,15 +155,19 @@ class follybeach_prediction_engine(wq_prediction_engine):
       config_file = ConfigParser.RawConfigParser()
       config_file.read(kwargs['config_file_name'])
 
+
       data_collector_plugin_directories=config_file.get('data_collector_plugins', 'plugin_directories')
       if len(data_collector_plugin_directories):
         data_collector_plugin_directories = data_collector_plugin_directories.split(',')
         self.collect_data(data_collector_plugin_directories=data_collector_plugin_directories)
 
 
-      '''
+
       boundaries_location_file = config_file.get('boundaries_settings', 'boundaries_file')
       sites_location_file = config_file.get('boundaries_settings', 'sample_sites')
+      units_file = config_file.get('units_conversion', 'config_file')
+      output_plugin_dirs=config_file.get('output_plugins', 'plugin_directories').split(',')
+      '''
       xenia_nexrad_db_file = config_file.get('database', 'name')
 
       #MOve xenia obs db settings into standalone ini. We can then
@@ -177,16 +181,16 @@ class follybeach_prediction_engine(wq_prediction_engine):
       xenia_obs_db_password = xenia_obs_db_config_file.get('xenia_observation_database', 'password')
       xenia_obs_db_name = xenia_obs_db_config_file.get('xenia_observation_database', 'database')
 
-      units_file = config_file.get('units_conversion', 'config_file')
-      output_plugin_dirs=config_file.get('output_plugins', 'plugin_directories').split(',')
       '''
     except (ConfigParser.Error, Exception) as e:
       self.logger.exception(e)
-    '''
+
     else:
+
       #Load the sample site information. Has name, location and the boundaries that contain the site.
       wq_sites = wq_sample_sites()
       wq_sites.load_sites(file_name=sites_location_file, boundary_file=boundaries_location_file)
+      '''
       #Retrieve the data needed for the models.
 
       wq_data = follybeach_wq_data(xenia_nexrad_db_name=xenia_nexrad_db_file,
@@ -284,15 +288,55 @@ class follybeach_prediction_engine(wq_prediction_engine):
             self.logger.exception(e)
 
       self.logger.debug("Total time to execute all sites models: %f ms" % (total_time * 1000))
+      '''
       try:
         self.output_results(output_plugin_directories=output_plugin_dirs,
-                                site_model_ensemble=site_model_ensemble,
-                                prediction_date=kwargs['begin_date'],
-                                prediction_run_date=prediction_testrun_date)
+                            #site_model_ensemble=site_model_ensemble,
+                            prediction_date=kwargs['begin_date'],
+                            prediction_run_date=prediction_testrun_date)
       except Exception as e:
         self.logger.exception(e)
-    '''
+
     return
+
+  def output_results(self, **kwargs):
+
+    self.logger.info("Begin run_output_plugins")
+
+    simplePluginManager = PluginManager()
+    logging.getLogger('yapsy').setLevel(logging.DEBUG)
+    simplePluginManager.setCategoriesFilter({
+       "OutputResults": data_collector_plugin
+       })
+
+    # Tell it the default place(s) where to find plugins
+    self.logger.debug("Plugin directories: %s" % (kwargs['output_plugin_directories']))
+    simplePluginManager.setPluginPlaces(kwargs['output_plugin_directories'])
+
+    simplePluginManager.collectPlugins()
+
+    plugin_cnt = 0
+    plugin_start_time = time.time()
+    for plugin in simplePluginManager.getAllPlugins():
+      self.logger.info("Starting plugin: %s" % (plugin.name))
+      if plugin.plugin_object.initialize_plugin(details=plugin.details,
+                                                prediction_date=kwargs['prediction_date'].astimezone(timezone("US/Eastern")).strftime("%Y-%m-%d %H:%M:%S"),
+                                                execution_date=kwargs['prediction_run_date'].strftime("%Y-%m-%d %H:%M:%S")
+                                                #ensemble_tests=kwargs['site_model_ensemble']
+                                                ):
+        plugin.plugin_object.start()
+        plugin_cnt += 1
+      else:
+        self.logger.error("Failed to initialize plugin: %s" % (plugin.details))
+
+      #Wait for the plugings to finish up.
+      self.logger.info("Waiting for %d plugins to complete." % (plugin_cnt))
+      for plugin in simplePluginManager.getAllPlugins():
+        plugin.plugin_object.join()
+        plugin.plugin_object.finalize()
+
+    self.logger.debug("%d output plugins run in %f seconds" % (plugin_cnt, time.time() - plugin_start_time))
+    self.logger.info("Finished collect_data")
 
 def main():
   parser = optparse.OptionParser()

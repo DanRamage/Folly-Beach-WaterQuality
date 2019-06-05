@@ -23,11 +23,16 @@ sqliteDB=/home/xeniaprod/scripts/dhec/dhec.db
 
 [output]
 outputDirectory=/Users/danramage/Documents/workspace/WaterQuality/FollyBeach-WaterQuality/data/test_outputs
-jsonfile=/mnt/wq_feeds/follybeach/monitorstations/beachAdvisoryResults.json
+jsonfile=/Users/danramage/Documents/workspace/WaterQuality/FollyBeach-WaterQuality/data/test_outputs/beachAdvisoryResults.json
 
 [stationData]
 stationGeoJsonFile=/mnt/wq_feeds/follybeach/monitorstations/stationsGeoJSON.json
 stationWQHistoryFile=/mnt/wq_feeds/follybeach/monitorstations/historicalWQ.json
+
+sitesFromCharlestonToInclude=Folly Beach;Folly River CHS Water Keeper
+
+charlestonSampleDataDirectory=/Users/danramage/Documents/workspace/WaterQuality/FollyBeach-WaterQuality/data/test_outputs
+charlestonPredictionFile=/Users/danramage/Documents/workspace/WaterQuality/FollyBeach-WaterQuality/data/test_outputs/CHSPredictions.json
 
 [sample_data_rest]
 url=http://dev.howsthebeach.org/station_data/follybeach/{station_name}?sampledate={date}&value={value}
