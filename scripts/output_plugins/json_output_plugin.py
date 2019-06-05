@@ -30,13 +30,13 @@ class json_output_plugin(data_collector_plugin):
       #logging.config.dictConfig(self.logging_client_cfg)
       logging.config.fileConfig(logger_conf)
       logger = logging.getLogger()
-      logger.debug("run started.")
+      logger.debug("json output run started.")
 
       # Charleston sites to include. We have a list of the charleston site name then ";" then the Folly SIte name to use.
       charleston_sites = self._plugin_details.get('charleston_sites', 'overlap_sites').split(',')
       folly_names = self._plugin_details.get('charleston_sites', 'folly_names').split(',')
       charleston_predictions = self._plugin_details.get('charleston_sites', 'predictions_file')
-
+      logger.debug("Opening JSON output file: %s" %(self.json_outfile))
       with open(self.json_outfile, 'w') as json_output_file:
         station_data = {'features' : [],
                         'type': 'FeatureCollection'}
