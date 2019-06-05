@@ -2,6 +2,7 @@ import sys
 sys.path.append('../../commonfiles/python')
 import logging.config
 import json
+import time
 from data_collector_plugin import data_collector_plugin
 
 class json_output_plugin(data_collector_plugin):
@@ -23,7 +24,7 @@ class json_output_plugin(data_collector_plugin):
     return False
 
   def run(self, **kwargs):
-
+    start_time = time()
     try:
       logger_conf = self._plugin_details.get('Settings', 'logging')
       #logging.config.dictConfig(self.logging_client_cfg)
@@ -69,11 +70,13 @@ class json_output_plugin(data_collector_plugin):
             })
         #Open the Charleston predictions and pull out the sites we want on Folly.
         try:
+          logger.debug("Opening CHS predictions file: %s" % (charleston_predictions))
           with open(charleston_predictions, "r") as chs_pred_file:
             chs_json = json.load(chs_pred_file)
             chs_features = chs_json['contents']['stationData']['features']
             for chs_feature in chs_features:
               for ndx,chs_site in enumerate(charleston_sites):
+                logger.debug("Searching for site: %s(%s)" % (chs_site,folly_names[ndx]))
                 if chs_feature['properties']['station'] == chs_site:
                   #Rename the station to what we want it for the Folly WQ project.
                   chs_feature['properties']['station'] = folly_names[ndx]
@@ -94,7 +97,7 @@ class json_output_plugin(data_collector_plugin):
         except Exception,e:
           if self.logger:
             self.logger.exception(e)
-      self.logger.debug("Finished json output.")
+      self.logger.debug("Finished json output in %f seconds." % (time.time()-start_time))
     except IOError,e:
       self.logger.exception(e)
     return
