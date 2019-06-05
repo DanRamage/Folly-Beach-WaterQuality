@@ -74,9 +74,9 @@ class json_output_plugin(data_collector_plugin):
           with open(charleston_predictions, "r") as chs_pred_file:
             chs_json = json.load(chs_pred_file)
             chs_features = chs_json['contents']['stationData']['features']
-            for chs_feature in chs_features:
-              for ndx,chs_site in enumerate(charleston_sites):
-                logger.debug("Searching for site: %s(%s)" % (chs_site,folly_names[ndx]))
+            for ndx, chs_site in enumerate(charleston_sites):
+              logger.debug("Searching for site: %s(%s)" % (chs_site, folly_names[ndx]))
+              for chs_feature in chs_features:
                 if chs_feature['properties']['station'] == chs_site:
                   #Rename the station to what we want it for the Folly WQ project.
                   chs_feature['properties']['station'] = folly_names[ndx]
@@ -93,6 +93,7 @@ class json_output_plugin(data_collector_plugin):
           }
         }
         try:
+          logger.debug("Writing JSON file: %s" % (self.json_outfile))
           json_output_file.write(json.dumps(json_data, sort_keys=True))
         except Exception,e:
           if self.logger:
