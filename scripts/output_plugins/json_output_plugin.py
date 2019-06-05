@@ -24,7 +24,7 @@ class json_output_plugin(data_collector_plugin):
     return False
 
   def run(self, **kwargs):
-    start_time = time()
+    start_time = time.time()
     try:
       logger_conf = self._plugin_details.get('Settings', 'logging')
       #logging.config.dictConfig(self.logging_client_cfg)
