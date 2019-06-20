@@ -1,0 +1,16 @@
+[Core]
+Name = Folly Beach Camera Stats
+Module = camera_statistics
+
+[Documentation]
+Author = Dan Ramage
+Version = 0.1
+Website = http://howsmyscriver.org
+Description =
+
+[Settings]
+ini_file=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/config/sc_rivers_engine.ini
+logfile=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logconf/camera_stats.conf
+data_file=/mnt/wq_feeds/follybeach/camera/summary_person_follypiernorthcam.csv
+output_file=/mnt/wq_feeds/follybeach/camera/summary_data.json
+resample_interval=3
