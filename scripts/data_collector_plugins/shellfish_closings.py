@@ -18,6 +18,8 @@ class shellfish_closings(data_collector_plugin):
 
   def initialize_plugin(self, **kwargs):
     try:
+      self.logging_client_cfg['disable_existing_loggers'] = True
+
       plugin_details = kwargs['details']
       self._log_conf = plugin_details.get("Settings", "logfile")
       self._output_file = plugin_details.get("Settings", "output_file")
@@ -31,9 +33,10 @@ class shellfish_closings(data_collector_plugin):
   def run(self):
     try:
         start_time = time.time()
-        #logger = None
-        #logging.config.fileConfig(self._log_conf)
-        logger = logging.getLogger(__name__)
+        logging.config.fileConfig(self._log_conf)
+        logger = logging.getLogger()
+        logger.debug("shellfish_closings run started.")
+
         requests_log = logging.getLogger("requests.packages.urllib3")
         requests_log.setLevel(logging.DEBUG)
         requests_log.propagate = True
