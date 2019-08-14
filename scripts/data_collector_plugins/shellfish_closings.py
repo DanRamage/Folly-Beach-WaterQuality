@@ -14,18 +14,19 @@ class shellfish_closings(data_collector_plugin):
 
   def __init__(self):
     data_collector_plugin.__init__(self)
+
     self.output_queue = None
 
   def initialize_plugin(self, **kwargs):
     try:
-      self.logging_client_cfg['disable_existing_loggers'] = True
+        data_collector_plugin.initialize_plugin(self, **kwargs)
+        self.logging_client_cfg['disable_existing_loggers'] = True
+        plugin_details = kwargs['details']
+        self._log_conf = plugin_details.get("Settings", "logfile")
+        self._output_file = plugin_details.get("Settings", "output_file")
+        self._rest_request = plugin_details.get("Settings", "rest_request")
 
-      plugin_details = kwargs['details']
-      self._log_conf = plugin_details.get("Settings", "logfile")
-      self._output_file = plugin_details.get("Settings", "output_file")
-      self._rest_request = plugin_details.get("Settings", "rest_request")
-
-      return True
+        return True
     except Exception as e:
       self.logger.exception(e)
     return False
