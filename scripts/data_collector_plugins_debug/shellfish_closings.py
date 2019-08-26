@@ -65,7 +65,7 @@ class shellfish_closings(data_collector_plugin):
                             shellfish_areas[area] = {'SF_AREA' : area,
                                                        'OBJECTID': obj_id,
                                                        'Storm_Closure': attr['Storm_Closure'],
-                                                        'last_check': last_check.strftime('%Y-%m-%d %H:%M')}
+                                                        'date_time_last_check': last_check.strftime('%Y-%m-%d %H:%M')}
 
             with open(self._output_file, 'w') as output_file:
                 output_file.write(json.dumps(shellfish_areas))
