@@ -34,6 +34,7 @@ class shellfish_closings(data_collector_plugin):
   def run(self):
     try:
         start_time = time.time()
+        last_check = datetime.now()
         logging.config.fileConfig(self._log_conf)
         logger = logging.getLogger()
         logger.debug("shellfish_closings run started.")
@@ -63,7 +64,8 @@ class shellfish_closings(data_collector_plugin):
                             logger.debug("ID: %d Area: %s" % (obj_id, area))
                             shellfish_areas[area] = {'SF_AREA' : area,
                                                        'OBJECTID': obj_id,
-                                                       'Storm_Closure': attr['Storm_Closure']}
+                                                       'Storm_Closure': attr['Storm_Closure'],
+                                                        'last_check': last_check.strftime('%Y-%m-%d %H:%M')}
 
             with open(self._output_file, 'w') as output_file:
                 output_file.write(json.dumps(shellfish_areas))
