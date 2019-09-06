@@ -2,6 +2,7 @@
 Name = DHEC Sample Data Collector
 Module = dhec_sample_data_collector_plugin
 
+
 [Documentation]
 Author = Dan Ramage
 Version = 0.1
