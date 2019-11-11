@@ -3,6 +3,8 @@ WKT,EPAbeachID,SPLocation,Description,County,Boundary,RunModel
 "POINT(-79.905017 32.670812)",SC460921,TRI-061,1561 E Ashley,Trident,"Folly Creek,Atlantic",True
 "POINT(-79.917767 32.663483)",SC460921,TRI-062,11th Ave,Trident,"Folly Creek,Atlantic",True
 "POINT(-79.931165 32.657893)",SC460921,TRI-063A,5th Avenue East,Trident,"Folly Creek,Atlantic",True
+"POINT(-79.938600 32.654504)",SC460921,TRI-064,Center St,Trident,"Folly Creek,Atlantic",True
+"POINT(-79.944599 32.652421)",SC460921,TRI-065,3rd Ave,Trident,"Folly Creek,Atlantic",True
 "POINT(-79.955055 32.647220)",SC460921,TRI-066,8th Ave,Trident,"Folly Creek,Atlantic",True
 "POINT(-79.959155 32.644902)",SC460921,TRI-067,Folly Park,Trident,"Folly Creek,Atlantic",True
 "POINT(-79.943512 32.660335)",,Folly River CHS Water Keeper,Folly Beach Boat Landing Charleston Water Keeper Site,,False

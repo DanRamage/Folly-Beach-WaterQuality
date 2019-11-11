@@ -3,10 +3,9 @@ sys.path.append('../commonfiles/python')
 
 import logging.config
 from datetime import datetime
-from pytz import timezone
-import traceback
-import time
 import optparse
+import time
+from pytz import timezone
 import ConfigParser
 from collections import OrderedDict
 import logging
@@ -14,58 +13,13 @@ from yapsy.PluginManager import PluginManager
 from multiprocessing import Queue
 
 from wq_prediction_tests import wqEquations
-from enterococcus_wq_test import EnterococcusPredictionTest,EnterococcusPredictionTestEx
+from xgboost_model import xgb_model
 from wq_sites import wq_sample_sites
 from data_collector_plugin import data_collector_plugin
 from wq_prediction_engine import wq_prediction_engine, data_result_types
 from stats import stats
+
 from follybeach_wq_data import follybeach_wq_data
-
-'''
-Function: build_test_objects
-Purpose: Builds the models used for doing the predictions.
-Parameters:
-  config_file - ConfigParser object
-  site_name - The name of the site whose models we are building.
-  use_logging - Flag to specify if we are to use logging.
-Return:
-  A list of models constructed.
-'''
-def build_test_objects(config_file, site_name):
-  logger = logging.getLogger(__name__)
-
-  model_list = []
-  #Get the sites test configuration ini, then build the test objects.
-  try:
-    test_config_file = config_file.get(site_name, 'prediction_config')
-    entero_lo_limit = config_file.getint('entero_limits', 'limit_lo')
-    entero_hi_limit = config_file.getint('entero_limits', 'limit_hi')
-  except ConfigParser.Error, e:
-    if logger:
-      logger.exception(e)
-  else:
-    if logger:
-      logger.debug("Site: %s Model Config File: %s" % (site_name, test_config_file))
-
-    model_config_file = ConfigParser.RawConfigParser()
-    model_config_file.read(test_config_file)
-    #Get the number of prediction models we use for the site.
-    model_count = model_config_file.getint("settings", "model_count")
-    if logger:
-      logger.debug("Site: %s Model count: %d" % (site_name, model_count))
-
-    for cnt in range(model_count):
-      model_name = model_config_file.get("model_%d" % (cnt+1), "name")
-      model_equation = model_config_file.get("model_%d" % (cnt+1), "formula")
-      if logger:
-        logger.debug("Site: %s Model name: %s equation: %s" % (site_name, model_name, model_equation))
-
-      test_obj = EnterococcusPredictionTestEx(model_equation, site_name, model_name)
-      test_obj.set_category_limits(entero_lo_limit, entero_hi_limit)
-      model_list.append(test_obj)
-
-  return model_list
-
 
 class follybeach_prediction_engine(wq_prediction_engine):
   def __init__(self):
@@ -84,24 +38,27 @@ class follybeach_prediction_engine(wq_prediction_engine):
     except ConfigParser.Error, e:
         self.logger.exception(e)
     else:
-      self.logger.debug("Site: %s Model Config File: %s" % (site_name, test_config_file))
+      if len(test_config_file):
+        self.logger.debug("Site: %s Model Config File: %s" % (site_name, test_config_file))
 
-      model_config_file = ConfigParser.RawConfigParser()
-      model_config_file.read(test_config_file)
-      #Get the number of prediction models we use for the site.
-      model_count = model_config_file.getint("settings", "model_count")
-      self.logger.debug("Site: %s Model count: %d" % (site_name, model_count))
+        model_config_file = ConfigParser.RawConfigParser()
+        model_config_file.read(test_config_file)
+        #Get the number of prediction models we use for the site.
+        model_count = model_config_file.getint("xgboost_models", "model_count")
+        self.logger.debug("Site: %s XGB Model count: %d" % (site_name, model_count))
 
-      for cnt in range(model_count):
-        model_name = model_config_file.get("model_%d" % (cnt+1), "name")
-        model_equation = model_config_file.get("model_%d" % (cnt+1), "formula")
-        self.logger.debug("Site: %s Model name: %s equation: %s" % (site_name, model_name, model_equation))
+        for cnt in range(model_count):
+          section_name = "xgboost_model_%d" % (cnt+1)
+          model_name = model_config_file.get(section_name, "name")
+          model_pickle_file =  model_config_file.get(section_name, "pickle_file")
+          self.logger.debug("Site: %s Model name: %s equation: %s" % (site_name, model_name, model_pickle_file))
 
-        test_obj = EnterococcusPredictionTestEx(formula=model_equation,
-                                                site_name=site_name,
-                                                model_name=model_name)
-        test_obj.set_category_limits(entero_lo_limit, entero_hi_limit)
-        model_list.append(test_obj)
+          test_obj = xgb_model(low_limit=entero_lo_limit,
+                               high_limit=entero_hi_limit,
+                               model_file=model_pickle_file,
+                               model_file_type='pickle'
+                               )
+          model_list.append(test_obj)
 
     return model_list
 
@@ -157,7 +114,8 @@ class follybeach_prediction_engine(wq_prediction_engine):
 
 
       data_collector_plugin_directories=config_file.get('data_collector_plugins', 'plugin_directories')
-      if len(data_collector_plugin_directories):
+      enable_data_collector_plugins  = config_file.getboolean('data_collector_plugins', 'enable_plugins')
+      if enable_data_collector_plugins and len(data_collector_plugin_directories):
         data_collector_plugin_directories = data_collector_plugin_directories.split(',')
         self.collect_data(data_collector_plugin_directories=data_collector_plugin_directories)
 
@@ -167,7 +125,8 @@ class follybeach_prediction_engine(wq_prediction_engine):
       sites_location_file = config_file.get('boundaries_settings', 'sample_sites')
       units_file = config_file.get('units_conversion', 'config_file')
       output_plugin_dirs=config_file.get('output_plugins', 'plugin_directories').split(',')
-      '''
+      enable_output_plugins = config_file.getboolean('output_plugins', 'enable_plugins')
+
       xenia_nexrad_db_file = config_file.get('database', 'name')
 
       #MOve xenia obs db settings into standalone ini. We can then
@@ -181,7 +140,7 @@ class follybeach_prediction_engine(wq_prediction_engine):
       xenia_obs_db_password = xenia_obs_db_config_file.get('xenia_observation_database', 'password')
       xenia_obs_db_name = xenia_obs_db_config_file.get('xenia_observation_database', 'database')
 
-      '''
+
     except (ConfigParser.Error, Exception) as e:
       self.logger.exception(e)
 
@@ -190,7 +149,7 @@ class follybeach_prediction_engine(wq_prediction_engine):
       #Load the sample site information. Has name, location and the boundaries that contain the site.
       wq_sites = wq_sample_sites()
       wq_sites.load_sites(file_name=sites_location_file, boundary_file=boundaries_location_file)
-      '''
+
       #Retrieve the data needed for the models.
 
       wq_data = follybeach_wq_data(xenia_nexrad_db_name=xenia_nexrad_db_file,
@@ -209,10 +168,11 @@ class follybeach_prediction_engine(wq_prediction_engine):
       total_time = 0
       tide_offsets = []
       #Get all the offset stations;
+      '''
       for site in wq_sites:
         # Get the station specific tide stations
         #tide_station = config_file.get(site.name, 'tide_station')
-        offset_tide_station = config_file.get(site.name, 'offset_tide_station')
+        offset_tide_station = "%s_tide_data" % (config_file.get(site.name, 'offset_tide_station'))
         # We use the virtual tide sites as there no stations near the sites.
         tide_station_settings = {
           'tide_station': config_file.get(site.name, 'tide_station'),
@@ -223,7 +183,8 @@ class follybeach_prediction_engine(wq_prediction_engine):
           'lo_tide_height_offset': config_file.getfloat(offset_tide_station, 'lo_tide_height_offset')
         }
         tide_offsets.append(tide_station_settings)
-
+      '''
+      site_data = OrderedDict()
       for site in wq_sites:
         try:
           #Get all the models used for the particular sample site.
@@ -231,10 +192,10 @@ class follybeach_prediction_engine(wq_prediction_engine):
           if len(model_list):
             #Create the container for all the models.
             site_equations = wqEquations(site.name, model_list, True)
-            """
+
             #Get the station specific tide stations
             tide_station = config_file.get(site.name, 'tide_station')
-            offset_tide_station = config_file.get(site.name, 'offset_tide_station')
+            offset_tide_station = "%s_tide_data" % (config_file.get(site.name, 'offset_tide_station'))
             #We use the virtual tide sites as there no stations near the sites.
             tide_offset_settings = {
               'tide_station': config_file.get(offset_tide_station, 'station_id'),
@@ -243,7 +204,19 @@ class follybeach_prediction_engine(wq_prediction_engine):
               'hi_tide_height_offset': config_file.getfloat(offset_tide_station, 'hi_tide_height_offset'),
               'lo_tide_height_offset': config_file.getfloat(offset_tide_station, 'lo_tide_height_offset')
             }
-            """
+            #Get the platforms the site will use
+            platforms = config_file.get(site.name, 'platforms').split(',')
+            platform_nfo = []
+            for platform in platforms:
+              obs_uoms = config_file.get(platform,'observation').split(';')
+              obs_uom_nfo = []
+              for nfo in obs_uoms:
+                obs,uom = nfo.split(',')
+                obs_uom_nfo.append({'observation': obs,
+                                    'uom': uom})
+              platform_nfo.append({'platform_handle': config_file.get(platform,'handle'),
+                                   'observations': obs_uom_nfo})
+
           else:
             self.logger.error("No models found for site: %s" % (site.name))
         except (ConfigParser.Error,Exception) as e:
@@ -252,10 +225,9 @@ class follybeach_prediction_engine(wq_prediction_engine):
           try:
             if len(model_list):
               wq_data.reset(site=site,
-                            tide_station_settings=tide_offsets,
-                                #tide_station=tide_station,
-                                #tide_offset_params=tide_offset_settings
-                                )
+                             tide_station=tide_station,
+                             tide_offset_params=tide_offset_settings,
+                             platform_info=platform_nfo)
 
               site_data['station_name'] = site.name
               wq_data.query_data(kwargs['begin_date'],
@@ -288,12 +260,13 @@ class follybeach_prediction_engine(wq_prediction_engine):
             self.logger.exception(e)
 
       self.logger.debug("Total time to execute all sites models: %f ms" % (total_time * 1000))
-      '''
+
       try:
-        self.output_results(output_plugin_directories=output_plugin_dirs,
-                            #site_model_ensemble=site_model_ensemble,
-                            prediction_date=kwargs['begin_date'],
-                            prediction_run_date=prediction_testrun_date)
+        if enable_output_plugins:
+          self.output_results(output_plugin_directories=output_plugin_dirs,
+                              #site_model_ensemble=site_model_ensemble,
+                              prediction_date=kwargs['begin_date'],
+                              prediction_run_date=prediction_testrun_date)
       except Exception as e:
         self.logger.exception(e)
 
@@ -365,6 +338,7 @@ def main():
       use_logging = True
 
   except (ConfigParser.Error,Exception) as e:
+    import traceback
     traceback.print_exc(e)
     sys.exit(-1)
   else:

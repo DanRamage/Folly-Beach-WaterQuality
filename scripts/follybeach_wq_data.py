@@ -20,6 +20,7 @@ from stats import calcAvgSpeedAndDir
 from romsTools import closestCellFromPtInPolygon
 from xenia import qaqcTestFlags
 from unitsConversion import uomconversionFunctions
+from astronomicalCalcs import moon
 
 
 class follybeach_wq_data(wq_data):
@@ -61,13 +62,19 @@ class follybeach_wq_data(wq_data):
 
 
   def reset(self, **kwargs):
-    self.site = kwargs['site']
-    # These are the settings to correct the tide for the subordinate station.
-    self.tide_offset_settings = kwargs['tide_station_settings']
+    if self.site is None or self.site != kwargs['site']:
+      self.site = kwargs['site']
+      #The main station we retrieve the values from.
+      self.tide_station = kwargs['tide_station']
+      #These are the settings to correct the tide for the subordinate station.
+      self.tide_offset_settings = kwargs['tide_offset_params']
 
-    self.tide_data_obj = None
-    if 'tide_data_obj' in kwargs and kwargs['tide_data_obj'] is not None:
-      self.tide_data_obj = kwargs['tide_data_obj']
+      #self.tide_data_obj = None
+      #if 'tide_data_obj' in kwargs and kwargs['tide_data_obj'] is not None:
+      #  self.tide_data_obj = kwargs['tide_data_obj']
+
+      self.platforms_info = kwargs['platform_info']
+
   """
   Function: initialize_return_data
   Purpose: INitialize our ordered dict with the data variables and assign a NO_DATA
@@ -78,38 +85,39 @@ class follybeach_wq_data(wq_data):
     None
   """
 
-  def initialize_return_data(self, wq_tests_data, reset_site_specific_data_only):
+  def initialize_return_data(self, wq_tests_data):
     if self.logger:
       self.logger.debug("Creating and initializing data dict.")
+    #Build variables for the base tide station.
+    var_name = 'tide_range_%s' % (self.tide_station)
+    wq_tests_data[var_name] = wq_defines.NO_DATA
+    var_name = 'tide_hi_%s' % (self.tide_station)
+    wq_tests_data[var_name] = wq_defines.NO_DATA
+    var_name = 'tide_lo_%s' % (self.tide_station)
+    wq_tests_data[var_name] = wq_defines.NO_DATA
+    var_name = 'tide_stage_%s' % (self.tide_station)
+    wq_tests_data[var_name] = wq_defines.NO_DATA
 
-    if not reset_site_specific_data_only:
+    #Build variables for the subordinate tide station.
+    var_name = 'tide_range_%s' % (self.tide_offset_settings['tide_station'])
+    wq_tests_data[var_name] = wq_defines.NO_DATA
+    var_name = 'tide_hi_%s' % (self.tide_offset_settings['tide_station'])
+    wq_tests_data[var_name] = wq_defines.NO_DATA
+    var_name = 'tide_lo_%s' % (self.tide_offset_settings['tide_station'])
+    wq_tests_data[var_name] = wq_defines.NO_DATA
 
-      for tide_offset in self.tide_offset_settings:
-        # Build variables for the base tide station. Only add it if we
-        #don't already have it in the data dictionary.
-        var_name = 'tide_range_%s' % (tide_offset['tide_station'])
-        if var_name not in wq_tests_data:
-          wq_tests_data[var_name] = wq_defines.NO_DATA
-          var_name = 'tide_hi_%s' % (tide_offset['tide_station'])
-          wq_tests_data[var_name] = wq_defines.NO_DATA
-          var_name = 'tide_lo_%s' % (tide_offset['tide_station'])
-          wq_tests_data[var_name] = wq_defines.NO_DATA
-          var_name = 'tide_stage_%s' % (tide_offset['tide_station'])
-          wq_tests_data[var_name] = wq_defines.NO_DATA
+    wq_tests_data['moon_percent_illumination'] = wq_defines.NO_DATA
+    wq_tests_data['moon_phase_angle'] = wq_defines.NO_DATA
 
-        # Build variables for the subordinate tide station.Only add it if we
-        #don't already have it in the data dictionary.
-        var_name = 'tide_range_%s' % (tide_offset['offset_tide_station'])
-        if var_name not in wq_tests_data:
-          wq_tests_data[var_name] = wq_defines.NO_DATA
-          var_name = 'tide_hi_%s' % (tide_offset['offset_tide_station'])
-          wq_tests_data[var_name] = wq_defines.NO_DATA
-          var_name = 'tide_lo_%s' % (tide_offset['offset_tide_station'])
-          wq_tests_data[var_name] = wq_defines.NO_DATA
+    for platform_nfo in self.platforms_info:
+      handle = platform_nfo['platform_handle']
+      for obs_nfo in platform_nfo['observations']:
+        var_name = '%s_avg_%s' % (handle.replace('.', '_'), obs_nfo['observation'])
+        wq_tests_data[var_name] = wq_defines.NO_DATA
 
     for boundary in self.site.contained_by:
       if len(boundary.name):
-        for prev_hours in range(24, 192, 24):
+        for prev_hours in range(24, 216, 24):
           clean_var_boundary_name = boundary.name.lower().replace(' ', '_')
           var_name = '%s_nexrad_summary_%d' % (clean_var_boundary_name, prev_hours)
           wq_tests_data[var_name] = wq_defines.NO_DATA
@@ -148,46 +156,48 @@ class follybeach_wq_data(wq_data):
     if self.logger:
       self.logger.debug("Site: %s start query data for datetime: %s" % (self.site.name, start_date))
 
+    self.initialize_return_data(wq_tests_data)
 
-    self.initialize_return_data(wq_tests_data, reset_site_specific_data_only)
-
-    '''
-    if not reset_site_specific_data_only:
-      for station in self.usgs_stations:
-        for variable in self.usgs_variables:
-          #Salinity is calculated from the water conductivity, so don't query it.
-          if variable[0] != 'salinity':
-            self.get_platform_data(station, variable[0], variable[1], variable[2], start_date, wq_tests_data)
-      for station in self.nos_stations:
-        for variable in self.nos_variables:
-          self.get_platform_data(station, variable[0], variable[1], variable[2], start_date, wq_tests_data)
-
+    for platform in self.platforms_info:
+      for obs_nfo in platform['observations']:
+        self.get_platform_data(platform['platform_handle'],
+                               obs_nfo['observation'], obs_nfo['uom'],
+                               start_date,
+                               wq_tests_data)
 
     self.get_nexrad_data(start_date, wq_tests_data)
     self.get_tide_data(start_date, wq_tests_data)
-    '''
+    self.get_moon_data(start_date, wq_tests_data)
 
     if self.logger:
       self.logger.debug("Site: %s Finished query data for datetime: %s" % (self.site.name, start_date))
 
 
-  def get_platform_data(self, platform_handle, variable, from_uom, to_uom, start_date, wq_tests_data):
+  def get_moon_data(self, start_date, wq_tests_data):
+    try:
+      utc_tz = timezone('UTC')
+      utc_time = start_date.astimezone(utc_tz)
+      moonCalcs = moon(utc_time.strftime("%Y-%m-%d 00:00:00"))
+      moonCalcs.doCalcs()
+      wq_tests_data['moon_percent_illumination'] = moonCalcs.percentIllumination
+      wq_tests_data['moon_phase_angle'] = moonCalcs.moonPhaseAngle
+    except Exception as e:
+      self.logger.exception(e)
+    return
+
+  def get_platform_data(self, platform_handle, variable, uom, start_date, wq_tests_data):
     start_time = time.time()
     try:
-      uom = from_uom
-      if to_uom is not None:
-        uom = to_uom
       self.logger.debug("Platform: %s Obs: %s(%s) Date: %s query" % (platform_handle, variable, uom, start_date))
 
       station = platform_handle.replace('.', '_')
-      var_name = '%s_%s' % (station, variable)
+      var_name = '%s_avg_%s' % (station, variable)
       end_date = start_date
       begin_date = start_date - timedelta(hours=24)
-      if variable != 'wind_speed':
-        sensor_id = self.xenia_obs_db.sensorExists(variable, from_uom, platform_handle, 1)
-      else:
-        sensor_id = self.xenia_obs_db.sensorExists(variable, from_uom, platform_handle, 1)
-        wind_dir_id = self.xenia_obs_db.sensorExists('wind_from_direction', 'degrees_true', platform_handle, 1)
+      dir_id = None
+      sensor_id = self.xenia_obs_db.sensorExists(variable, uom, platform_handle, 1)
+      if variable == 'wind_speed':
+        dir_id = self.xenia_obs_db.sensorExists('wind_from_direction', 'degrees_true', platform_handle, 1)
 
       if sensor_id is not -1 and sensor_id is not None:
         recs = self.xenia_obs_db.session.query(sl_multi_obs) \
@@ -196,17 +206,17 @@ class follybeach_wq_data(wq_data):
           .filter(sl_multi_obs.sensor_id == sensor_id) \
           .filter(or_(sl_multi_obs.qc_level == qaqcTestFlags.DATA_QUAL_GOOD, sl_multi_obs.qc_level == None)) \
           .order_by(sl_multi_obs.m_date).all()
-        if variable == 'wind_speed':
+        if dir_id is not None:
           dir_recs = self.xenia_obs_db.session.query(sl_multi_obs) \
             .filter(sl_multi_obs.m_date >= begin_date.strftime('%Y-%m-%dT%H:%M:%S')) \
             .filter(sl_multi_obs.m_date < end_date.strftime('%Y-%m-%dT%H:%M:%S')) \
-            .filter(sl_multi_obs.sensor_id == wind_dir_id) \
+            .filter(sl_multi_obs.sensor_id == dir_id) \
             .filter(or_(sl_multi_obs.qc_level == qaqcTestFlags.DATA_QUAL_GOOD, sl_multi_obs.qc_level == None)) \
             .order_by(sl_multi_obs.m_date).all()
 
         if len(recs):
           if variable == 'wind_speed':
-            if sensor_id is not None and wind_dir_id is not None:
+            if sensor_id is not None and dir_id is not None:
               wind_dir_tuples = []
               direction_tuples = []
               scalar_speed_avg = None
@@ -240,21 +250,30 @@ class follybeach_wq_data(wq_data):
                 avg_dir_components = calcAvgSpeedAndDir(direction_tuples)
                 scalar_speed_avg = scalar_speed_avg / speed_count
                 wq_tests_data[var_name] = scalar_speed_avg
-                wind_dir_var_name = '%s_%s' % (station, 'wind_from_direction')
+                wind_dir_var_name = '%s_avg_%s' % (station, 'wind_from_direction')
                 wq_tests_data[wind_dir_var_name] = avg_dir_components[1]
                 self.logger.debug(
                   "Platform: %s Avg Scalar Wind Speed: %f(m_s-1) %f(mph) Direction: %f" % (platform_handle,
                                                                                            scalar_speed_avg,
                                                                                            scalar_speed_avg,
                                                                                            avg_dir_components[1]))
+          #Calculate vector direction.
+          elif variable == 'sea_surface_wave_to_direction':
+            direction_tuples = []
+            for dir_row in recs:
+              # Vector with speed as constant(1), and direction.
+              direction_tuples.append((1, dir_row.m_value))
 
+            if len(direction_tuples):
+              # Unity components, just direction with speeds all 1.
+              avg_dir_components = calcAvgSpeedAndDir(direction_tuples)
+              wq_tests_data[var_name] = avg_dir_components[1]
+              self.logger.debug(
+                "Platform: %s Avg Scalar Direction: %f" % (platform_handle,
+                                                           avg_dir_components[1]))
 
           else:
             wq_tests_data[var_name] = sum(rec.m_value for rec in recs) / len(recs)
-            if to_uom is not None:
-              converted_val = self.units_conversion.measurementConvert(wq_tests_data[var_name], from_uom, to_uom)
-              if converted_val is not None:
-                wq_tests_data[var_name] = converted_val
             self.logger.debug("Platform: %s Avg %s: %f Records used: %d" % (
               platform_handle, variable, wq_tests_data[var_name], len(recs)))
 
@@ -262,7 +281,7 @@ class follybeach_wq_data(wq_data):
               water_con = wq_tests_data[var_name]
               #if uom == 'uS_cm-1':
               water_con = water_con / 1000.0
-              salinity_var = '%s_%s' % (station, 'salinity')
+              salinity_var = '%s_avg_%s' % (station, 'salinity')
               wq_tests_data[salinity_var] = 0.47413 / (math.pow((1 / water_con), 1.07) - 0.7464 * math.pow(10, -3))
               self.logger.debug("Platform: %s Avg %s: %f Records used: %d" % (
                 platform_handle, 'salinity', wq_tests_data[salinity_var], len(recs)))
@@ -279,60 +298,59 @@ class follybeach_wq_data(wq_data):
     return True
 
   def get_tide_data(self, start_date, wq_tests_data):
-    for tide_offset in self.tide_offset_settings:
-      start_time = time.time()
-      primary_tide_station = tide_offset['tide_station']
-      primary_station_range = 'tide_range_%s' % (primary_tide_station)
-      #If we don't have data for this tide station, retrieve it. The self.tide_offset_settings
-      #list has the primary and subordinate stations, and the primary station can occur in multiple
-      #subrdinates, so we only need to query the data once for the primary.
-      if wq_tests_data[primary_station_range] == wq_defines.NO_DATA:
-        if self.logger:
-          self.logger.debug("Start retrieving tide data for station: %s date: %s" % (primary_tide_station, start_date))
-
-        tide = noaaTideDataExt(use_raw=True, logger=self.logger)
-
-        tide_start_time = (start_date - timedelta(hours=24))
-        tide_end_time = start_date
-
-        #Try and query the NOAA soap service. We give ourselves 5 tries.
-        for x in range(0, 5):
-          if self.logger:
-            self.logger.debug("Attempt: %d retrieving tide data for station." % (x + 1))
-            tide_data = tide.calcTideRangePeakDetect(beginDate=tide_start_time,
-                                                       endDate=tide_end_time,
-                                                       station=primary_tide_station,
-                                                       datum='MLLW',
-                                                       units='feet',
-                                                       timezone='GMT',
-                                                       smoothData=False,
-                                                       write_tide_data=False)
-          if tide_data is not None:
-            break
-        if tide_data is not None:
-          tide_range = tide_data['HH']['value'] - tide_data['LL']['value']
-
-          wq_tests_data['tide_range_%s' % (primary_tide_station)] = tide_range
-          wq_tests_data['tide_hi_%s' % (primary_tide_station)] = float(tide_data['HH']['value'])
-          wq_tests_data['tide_lo_%s' % (primary_tide_station)] = float(tide_data['LL']['value'])
-          wq_tests_data['tide_stage_%s' % (primary_tide_station)] = tide_data['tide_stage']
-
-      # Save subordinate station values
-
-      subordinate_station_var_name ='tide_range_%s' % (tide_offset['offset_tide_station'])
-      if wq_tests_data[subordinate_station_var_name] == wq_defines.NO_DATA:
-        if wq_tests_data[primary_station_range] != wq_defines.NO_DATA:
-          #The subordinate calcualtions are made from the primary station. NOAA provides
-          #the offset constants to apply against the primary results.
-          offset_hi = wq_tests_data['tide_hi_%s' % (primary_tide_station)] * tide_offset['hi_tide_height_offset']
-          offset_lo = wq_tests_data['tide_lo_%s' % (primary_tide_station)] * tide_offset['lo_tide_height_offset']
-
-          wq_tests_data[subordinate_station_var_name] = offset_hi - offset_lo
-          wq_tests_data['tide_hi_%s' % (tide_offset['offset_tide_station'])] = offset_hi
-          wq_tests_data['tide_lo_%s' % (tide_offset['offset_tide_station'])] = offset_lo
-
+    start_time = time.time()
+    primary_tide_station = self.tide_station
+    primary_station_range = 'tide_range_%s' % (primary_tide_station)
+    #If we don't have data for this tide station, retrieve it. The self.tide_offset_settings
+    #list has the primary and subordinate stations, and the primary station can occur in multiple
+    #subrdinates, so we only need to query the data once for the primary.
+    if wq_tests_data[primary_station_range] == wq_defines.NO_DATA:
       if self.logger:
-        self.logger.debug("Finished retrieving tide data for station: %s date: %s in %f seconds" % (self.tide_station, start_date, time.time()-start_time))
+        self.logger.debug("Start retrieving tide data for station: %s date: %s" % (primary_tide_station, start_date))
+
+      tide = noaaTideDataExt(use_raw=True, logger=self.logger)
+
+      tide_start_time = (start_date - timedelta(hours=24))
+      tide_end_time = start_date
+
+      #Try and query the NOAA soap service. We give ourselves 5 tries.
+      for x in range(0, 5):
+        if self.logger:
+          self.logger.debug("Attempt: %d retrieving tide data for station." % (x + 1))
+          tide_data = tide.calcTideRangePeakDetect(beginDate=tide_start_time,
+                                                     endDate=tide_end_time,
+                                                     station=primary_tide_station,
+                                                     datum='MLLW',
+                                                     units='feet',
+                                                     timezone='GMT',
+                                                     smoothData=False,
+                                                     write_tide_data=False)
+        if tide_data is not None:
+          break
+      if tide_data is not None:
+        tide_range = tide_data['HH']['value'] - tide_data['LL']['value']
+
+        wq_tests_data['tide_range_%s' % (primary_tide_station)] = tide_range
+        wq_tests_data['tide_hi_%s' % (primary_tide_station)] = float(tide_data['HH']['value'])
+        wq_tests_data['tide_lo_%s' % (primary_tide_station)] = float(tide_data['LL']['value'])
+        wq_tests_data['tide_stage_%s' % (primary_tide_station)] = tide_data['tide_stage']
+
+    # Save subordinate station values
+
+    subordinate_station_var_name ='tide_range_%s' % (self.tide_offset_settings['tide_station'])
+    if wq_tests_data[subordinate_station_var_name] == wq_defines.NO_DATA:
+      if wq_tests_data[primary_station_range] != wq_defines.NO_DATA:
+        #The subordinate calcualtions are made from the primary station. NOAA provides
+        #the offset constants to apply against the primary results.
+        offset_hi = wq_tests_data['tide_hi_%s' % (primary_tide_station)] * self.tide_offset_settings['hi_tide_height_offset']
+        offset_lo = wq_tests_data['tide_lo_%s' % (primary_tide_station)] * self.tide_offset_settings['lo_tide_height_offset']
+
+        wq_tests_data[subordinate_station_var_name] = offset_hi - offset_lo
+        wq_tests_data['tide_hi_%s' % (self.tide_offset_settings['tide_station'])] = offset_hi
+        wq_tests_data['tide_lo_%s' % (self.tide_offset_settings['tide_station'])] = offset_lo
+
+    if self.logger:
+      self.logger.debug("Finished retrieving tide data for station: %s date: %s in %f seconds" % (self.tide_station, start_date, time.time()-start_time))
 
     return
 
@@ -349,7 +367,7 @@ class follybeach_wq_data(wq_data):
       if self.logger:
         self.logger.debug("Start retrieving nexrad platfrom: %s" % (platform_handle))
       # Get the radar data for previous 8 days in 24 hour intervals
-      for prev_hours in range(24, 192, 24):
+      for prev_hours in range(24, 216, 24):
         var_name = '%s_nexrad_summary_%d' % (clean_var_bndry_name, prev_hours)
         radar_val = self.nexrad_db.getLastNHoursSummaryFromRadarPrecip(platform_handle,
                                                                        start_date,
