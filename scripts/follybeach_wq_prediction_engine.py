@@ -186,8 +186,6 @@ class follybeach_prediction_engine(wq_prediction_engine):
       reset_site_specific_data_only = False
       site_data = OrderedDict()
       total_time = 0
-      #Get all the offset stations;
-      site_data = OrderedDict()
       site_model_ensemble = []
       for site in wq_sites:
         try:
@@ -195,41 +193,7 @@ class follybeach_prediction_engine(wq_prediction_engine):
           model_list = self.build_test_objects(config_file=config_file, site_name=site.name)
           if len(model_list) == 0:
             self.logger.error("No models found for site: %s" % (site.name))
-          '''
-          if len(model_list):
-            #Create the container for all the models.
-            #site_equations = wqEquations(site.name, model_list, True)
 
-            
-            #Get the station specific tide stations
-            tide_station = config_file.get(site.name, 'tide_station')
-            offset_tide_station = "%s_tide_data" % (config_file.get(site.name, 'offset_tide_station'))
-            #We use the virtual tide sites as there no stations near the sites.
-            tide_offset_settings = {
-              'tide_station': config_file.get(offset_tide_station, 'station_id'),
-              'hi_tide_time_offset': config_file.getint(offset_tide_station, 'hi_tide_time_offset'),
-              'lo_tide_time_offset': config_file.getint(offset_tide_station, 'lo_tide_time_offset'),
-              'hi_tide_height_offset': config_file.getfloat(offset_tide_station, 'hi_tide_height_offset'),
-              'lo_tide_height_offset': config_file.getfloat(offset_tide_station, 'lo_tide_height_offset')
-            }
-            if not os.path.exists(model_data_dir):
-              os.makedirs(model_data_dir)
-            #Get the platforms the site will use
-            platforms = config_file.get(site.name, 'platforms').split(',')
-            platform_nfo = []
-            for platform in platforms:
-              obs_uoms = config_file.get(platform,'observation').split(';')
-              obs_uom_nfo = []
-              for nfo in obs_uoms:
-                obs,uom = nfo.split(',')
-                obs_uom_nfo.append({'observation': obs,
-                                    'uom': uom})
-              platform_nfo.append({'platform_handle': config_file.get(platform,'handle'),
-                                   'observations': obs_uom_nfo})
-            
-          else:
-            self.logger.error("No models found for site: %s" % (site.name))
-          '''
         except (ConfigParser.Error,Exception) as e:
           self.logger.exception(e)
         else:
@@ -238,6 +202,7 @@ class follybeach_prediction_engine(wq_prediction_engine):
               site_models = xgb_ensemble(site, model_list)
               for model in model_list:
                 self.logger.debug("Site: %s Model: %s starting prediction" % (site.name, model.name))
+                site_data = OrderedDict()
                 model_data_dir = config_file.get(site.name, 'data_directory')
 
                 wq_data = follybeach_wq_data(xenia_nexrad_db_name=xenia_nexrad_db_file,
