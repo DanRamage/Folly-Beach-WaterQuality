@@ -1,7 +1,2 @@
-WKT,EPAbeachID,SPLocation,Description,County,Boundary
-"POINT(0 0)",,TRI-060A,,,
-"POINT(0 0)",,TRI-061,,,
-"POINT(0 0)",,TRI-062,,,
-"POINT(0 0)",,TRI-063A,,,
-"POINT(0 0)",,TRI-066,,,
-"POINT(0 0)",,TRI-067,,,
+WKT,EPAbeachID,SPLocation,Description,County,Boundary,RunModel
+"POINT(-79.938600 32.654504)",SC460921,TRI-064,Center St,Trident,"Folly Creek,Atlantic",True
