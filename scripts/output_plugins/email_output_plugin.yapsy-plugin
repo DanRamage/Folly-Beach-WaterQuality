@@ -1,0 +1,17 @@
+[Core]
+Name = WQ Email Plugin
+Module = email_output_plugin
+
+[Documentation]
+Author = Dan Ramage
+Version = 0.1
+Website = http://howsthebeach.org
+Description = Folly Beach specific water quality processing.
+
+[Settings]
+logging=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/config/logconf/folly_email_output_debug.conf
+password_ini_file=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/config/password_options.ini
+
+results_template=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/templates/test_results_report.mako
+results_outfile=/mnt/wq_feeds/follybeach/prediction_results/prediction_results.html
+report_url=http://129.252.139.124/mapping/xenia/feeds/dhec/vb_engine/prediction_results/
