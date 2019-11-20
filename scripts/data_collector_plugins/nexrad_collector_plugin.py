@@ -7,17 +7,24 @@ from pytz import timezone
 import ConfigParser
 import traceback
 import time
+from yapsy.IPlugin import IPlugin
+from multiprocessing import Process
 
 from wqXMRGProcessing import wqXMRGProcessing
 
 class nexrad_collector_plugin(data_collector_plugin):
 
   def initialize_plugin(self, **kwargs):
-    data_collector_plugin.initialize_plugin(self, **kwargs)
+    #data_collector_plugin.initialize_plugin(self, **kwargs)
     try:
+      Process.__init__(self)
+      IPlugin.__init__(self)
+
       logger = logging.getLogger(self.__class__.__name__)
       self.plugin_details = kwargs['details']
       self.ini_file = self.plugin_details.get('Settings', 'ini_file')
+      self.log_config = self.plugin_details.get("Settings", "log_config")
+
       return True
     except Exception as e:
       logger.exception(e)
@@ -27,8 +34,9 @@ class nexrad_collector_plugin(data_collector_plugin):
     logger = None
     try:
       start_time = time.time()
-      self.logging_client_cfg['disable_existing_loggers'] = True
-      logging.config.dictConfig(self.logging_client_cfg)
+      #self.logging_client_cfg['disable_existing_loggers'] = True
+      #logging.config.dictConfig(self.logging_client_cfg)
+      logging.config.fileConfig(self.log_config)
       logger = logging.getLogger(self.__class__.__name__)
       logger.debug("run started.")
 

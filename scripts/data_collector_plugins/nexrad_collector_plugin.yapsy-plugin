@@ -10,3 +10,5 @@ Description = Myrtle Beach specific nexrad data processing.
 
 [Settings]
 ini_file=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/folly_prediction_engine.ini
+log_config=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logconf/folly_nexrad_plugin.conf
+
