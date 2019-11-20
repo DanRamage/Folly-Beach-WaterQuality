@@ -9,7 +9,7 @@ Website = http://howsthebeach.org
 Description = Folly Beach specific water quality processing.
 
 [Settings]
-logging=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/config/logconf/folly_email_output_debug.conf
+logging=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/config/logconf/folly_email_output.conf
 password_ini_file=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/config/password_options.ini
 
 results_template=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/templates/test_results_report.mako
