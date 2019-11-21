@@ -93,4 +93,4 @@ class email_output_plugin(data_collector_plugin):
     logger.debug("Finished emit for email output.")
 
   def finalize(self):
-    returnn
+    return
