@@ -12,7 +12,7 @@ from data_collector_plugin import data_collector_plugin
 class email_output_plugin(data_collector_plugin):
   def initialize_plugin(self, **kwargs):
     try:
-      data_collector_plugin.initialize_plugin(self, **kwargs)
+      #data_collector_plugin.initialize_plugin(self, **kwargs)
 
       self.logger.debug("Email plugin intializing started.")
       self._plugin_details = kwargs['details']
