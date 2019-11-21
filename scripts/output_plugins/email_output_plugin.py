@@ -7,6 +7,7 @@ from smtp_utils import smtpClass
 import os
 import ConfigParser
 import logging.config
+import time
 from data_collector_plugin import data_collector_plugin
 
 class email_output_plugin(data_collector_plugin):
@@ -39,6 +40,7 @@ class email_output_plugin(data_collector_plugin):
 
   def run(self):
     logger = None
+    start_time = time.time()
     try:
       logging.config.fileConfig(self._run_logger_conf)
       logger = logging.getLogger()
@@ -69,6 +71,7 @@ class email_output_plugin(data_collector_plugin):
         #Add the prediction date into the filename
         file_name = "%s-%s%s" % (file_parts[1], self.prediction_date.replace(':', '_').replace(' ', '-'), file_ext[1])
         out_filename = os.path.join(file_parts[0], file_name)
+        logger.debug("Opening output file: %s" % (out_filename))
         with open(out_filename, 'w') as report_out_file:
           report_url = '%s/%s' % (self.report_url, file_name)
           results_report = mytemplate.render(ensemble_tests=self.ensemble_tests,
@@ -82,6 +85,7 @@ class email_output_plugin(data_collector_plugin):
           logger.exception(e)
       else:
         try:
+          logger.debug("Emailing output file: %s" % (out_filename))
           subject = self.subject % (self.prediction_date)
           #Now send the email.
           smtp = smtpClass(host=self.mailhost, user=self.user, password=self.password)
@@ -92,7 +96,7 @@ class email_output_plugin(data_collector_plugin):
           smtp.send(content_type="html")
         except Exception as e:
             logger.exception(e)
-    logger.debug("Finished emit for email output.")
+    logger.debug("Finished email plugin run in %s seconds" % (time.time()-start_time))
 
   def finalize(self):
     return
