@@ -10,7 +10,7 @@ Description = Folly Beach specific water quality processing.
 
 [Settings]
 logging=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logconf/folly_email_output.conf
-password_ini_file=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/config/password_options.ini
+password_ini_file=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/password_options.ini
 
 results_template=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/templates/test_results_report.mako
 results_outfile=/mnt/wq_feeds/follybeach/prediction_results/prediction_results.html

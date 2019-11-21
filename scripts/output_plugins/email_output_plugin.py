@@ -39,7 +39,6 @@ class email_output_plugin(data_collector_plugin):
 
   def run(self):
     logger = None
-    print("email_output_plugin run")
     try:
       logging.config.fileConfig(self._run_logger_conf)
       logger = logging.getLogger()
