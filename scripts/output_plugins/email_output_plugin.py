@@ -83,6 +83,10 @@ class email_output_plugin(data_collector_plugin):
         except Exception as e:
             logger.exception(e)
     except Exception as e:
-      logger.exception(e)
+      if logger is not None:
+        logger.exception(e)
+      else:
+        import traceback
+        traceback.print_exc(e)
     logger.debug("Finished emit for email output.")
 
