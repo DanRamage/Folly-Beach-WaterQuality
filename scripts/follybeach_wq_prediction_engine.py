@@ -314,17 +314,19 @@ class follybeach_prediction_engine(wq_prediction_engine):
     plugin_cnt = 0
     plugin_start_time = time.time()
     for plugin in simplePluginManager.getAllPlugins():
-      self.logger.info("Starting plugin: %s" % (plugin.name))
-      if plugin.plugin_object.initialize_plugin(details=plugin.details,
-                                                prediction_date=kwargs['prediction_date'].astimezone(timezone("US/Eastern")).strftime("%Y-%m-%d %H:%M:%S"),
-                                                execution_date=kwargs['prediction_run_date'].strftime("%Y-%m-%d %H:%M:%S"),
-                                                ensemble_tests=kwargs['site_model_ensemble']
-                                                ):
-        plugin.plugin_object.start()
-        plugin_cnt += 1
-      else:
-        self.logger.error("Failed to initialize plugin: %s" % (plugin.details))
-
+      try:
+        self.logger.info("Starting plugin: %s" % (plugin.name))
+        if plugin.plugin_object.initialize_plugin(details=plugin.details,
+                                                  prediction_date=kwargs['prediction_date'].astimezone(timezone("US/Eastern")).strftime("%Y-%m-%d %H:%M:%S"),
+                                                  execution_date=kwargs['prediction_run_date'].strftime("%Y-%m-%d %H:%M:%S"),
+                                                  ensemble_tests=kwargs['site_model_ensemble']
+                                                  ):
+          plugin.plugin_object.start()
+          plugin_cnt += 1
+        else:
+          self.logger.error("Failed to initialize plugin: %s" % (plugin.details))
+      except  Exception as e:
+        self.logger.exception(e)
       #Wait for the plugings to finish up.
       self.logger.info("Waiting for %d plugins to complete." % (plugin_cnt))
       for plugin in simplePluginManager.getAllPlugins():
