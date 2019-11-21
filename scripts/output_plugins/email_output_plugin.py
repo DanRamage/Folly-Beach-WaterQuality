@@ -36,7 +36,7 @@ class email_output_plugin(data_collector_plugin):
     except Exception as e:
       self.logger.exception(e)
     return False
-
+  '''
   def run(self):
     logger = None
     print("run")
@@ -94,6 +94,6 @@ class email_output_plugin(data_collector_plugin):
         except Exception as e:
             logger.exception(e)
     logger.debug("Finished emit for email output.")
-
+  '''
   def finalize(self):
     return
