@@ -36,13 +36,13 @@ class email_output_plugin(data_collector_plugin):
     except Exception as e:
       self.logger.exception(e)
     return False
-  '''
+
   def run(self):
     logger = None
-    print("run")
+    print("email_output_plugin run")
     try:
       logging.config.fileConfig(self._run_logger_conf)
-      logger = logging.getLogger(self.__class__.__name__)
+      logger = logging.getLogger()
       logger.debug("run started.")
     except Exception as e:
       import traceback
@@ -94,6 +94,6 @@ class email_output_plugin(data_collector_plugin):
         except Exception as e:
             logger.exception(e)
     logger.debug("Finished emit for email output.")
-  '''
+
   def finalize(self):
     return
