@@ -41,7 +41,12 @@ class email_output_plugin(data_collector_plugin):
       logging.config.fileConfig(self._run_logger_conf)
       logger = logging.getLogger(self.__class__.__name__)
       logger.debug("run started.")
-
+    except Exception as e:
+      import traceback
+      traceback.print_exc(e)
+      if logger is not None:
+        logger.exception(e)
+    else:
       try:
         #Get email server settings.
         password_config_file = ConfigParser.RawConfigParser()
@@ -85,11 +90,5 @@ class email_output_plugin(data_collector_plugin):
           smtp.send(content_type="html")
         except Exception as e:
             logger.exception(e)
-    except Exception as e:
-      if logger is not None:
-        logger.exception(e)
-      else:
-        import traceback
-        traceback.print_exc(e)
     logger.debug("Finished emit for email output.")
 
