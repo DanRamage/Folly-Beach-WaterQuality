@@ -8,10 +8,17 @@ import os
 import ConfigParser
 import logging.config
 from data_collector_plugin import data_collector_plugin
+from yapsy.IPlugin import IPlugin
+from multiprocessing import Process
 
 class email_output_plugin(data_collector_plugin):
+  def __init__(self):
+    Process.__init__(self)
+    IPlugin.__init__(self)
+
   def initialize_plugin(self, **kwargs):
     try:
+
       #data_collector_plugin.initialize_plugin(self, **kwargs)
 
       self.logger.debug("Email plugin intializing started.")
