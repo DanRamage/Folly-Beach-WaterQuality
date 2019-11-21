@@ -14,6 +14,7 @@ class email_output_plugin(data_collector_plugin):
     try:
       data_collector_plugin.initialize_plugin(self, **kwargs)
 
+      self.logger.debug("Email plugin intializing started.")
       self._plugin_details = kwargs['details']
 
       self.prediction_date = kwargs['prediction_date']
@@ -24,6 +25,7 @@ class email_output_plugin(data_collector_plugin):
       self.result_outfile = self._plugin_details.get("Settings", "results_outfile")
       self.results_template = self._plugin_details.get("Settings", "results_template")
       self.report_url = self._plugin_details.get("Settings", "report_url")
+      self.logger.debug("Email plugin intializing finished.")
       return True
     except Exception as e:
       self.logger.exception(e)
