@@ -25,6 +25,10 @@ class email_output_plugin(data_collector_plugin):
       self.result_outfile = self._plugin_details.get("Settings", "results_outfile")
       self.results_template = self._plugin_details.get("Settings", "results_template")
       self.report_url = self._plugin_details.get("Settings", "report_url")
+
+      self._run_logger_conf = self._plugin_details.get('Settings', 'logging')
+
+
       self.logger.debug("Email plugin intializing finished.")
       return True
     except Exception as e:
@@ -32,11 +36,10 @@ class email_output_plugin(data_collector_plugin):
     return False
 
   def run(self):
+    logger = None
     try:
-      logger = None
-      logger_conf = self._plugin_details.get('Settings', 'logging')
-      logging.config.fileConfig(logger_conf)
-      logger = logging.getLogger()
+      logging.config.fileConfig(self._run_logger_conf)
+      logger = logging.getLogger(self.__class__.__name__)
       logger.debug("run started.")
 
       try:
