@@ -19,7 +19,6 @@ class shellfish_closings(data_collector_plugin):
 
   def initialize_plugin(self, **kwargs):
     try:
-        data_collector_plugin.initialize_plugin(self, **kwargs)
         self.logging_client_cfg['disable_existing_loggers'] = True
         plugin_details = kwargs['details']
         self._log_conf = plugin_details.get("Settings", "logfile")
@@ -74,3 +73,6 @@ class shellfish_closings(data_collector_plugin):
         logger.debug("dhec_shellfish_closures run finished in %f seconds." % (time.time()-start_time))
     except Exception as e:
         logger.exception(e)
+
+  def finalize(self):
+    return

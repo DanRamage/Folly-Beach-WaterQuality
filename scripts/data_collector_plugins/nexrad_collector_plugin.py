@@ -15,7 +15,6 @@ from wqXMRGProcessing import wqXMRGProcessing
 class nexrad_collector_plugin(data_collector_plugin):
 
   def initialize_plugin(self, **kwargs):
-    #data_collector_plugin.initialize_plugin(self, **kwargs)
     try:
       Process.__init__(self)
       IPlugin.__init__(self)
@@ -67,4 +66,7 @@ class nexrad_collector_plugin(data_collector_plugin):
       except Exception as e:
         logger.exception(e)
       logger.debug("run finished in %f seconds" % (time.time()-start_time))
+    return
+
+  def finalize(self):
     return
