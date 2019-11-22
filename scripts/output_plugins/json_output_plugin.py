@@ -48,12 +48,12 @@ class json_output_plugin(data_collector_plugin):
             if 'statistics' in rec:
               stats = rec['statistics']
             test_data = []
-            for test in test_results.tests:
+            for test in test_results.models:
               test_data.append({
-                'name': test.model_name,
-                'p_level': test.predictionLevel.__str__(),
-                'p_value': test.mlrResult,
-                'data': test.data_used
+                'name': test.name,
+                'p_level': test.prediction_level.__str__(),
+                'p_value': test.result,
+                'data': test.model_data
               })
             features.append({
               'type': 'Feature',
@@ -63,7 +63,7 @@ class json_output_plugin(data_collector_plugin):
               },
               'properties': {
                 'desc': site_metadata.name,
-                'ensemble': str(test_results.ensemblePrediction),
+                'ensemble': str(test_results.ensemble_predicition),
                 'station': site_metadata.name,
                 'tests': test_data
               }

@@ -91,7 +91,7 @@ class xgb_model(EnterococcusPredictionTest):
             # X_test = np.array(list([item for item in data.values()[1:]]))
             X_test = np.array([test_list])
 
-            self._result = self._xgb_model.predict(X_test)
+            self._result = float(self._xgb_model.predict(X_test)[0])
             if self._classifier_type == 'binary':
                 if self._result:
                     self._prediction_level.value = prediction_levels.HIGH
