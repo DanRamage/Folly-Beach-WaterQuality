@@ -19,7 +19,7 @@ class shellfish_closings(data_collector_plugin):
 
   def initialize_plugin(self, **kwargs):
     try:
-        self.logging_client_cfg['disable_existing_loggers'] = True
+        #self.logging_client_cfg['disable_existing_loggers'] = True
         plugin_details = kwargs['details']
         self._log_conf = plugin_details.get("Settings", "logfile")
         self._output_file = plugin_details.get("Settings", "output_file")
