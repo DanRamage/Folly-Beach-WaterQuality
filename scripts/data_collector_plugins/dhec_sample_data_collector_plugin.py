@@ -22,18 +22,18 @@ class dhec_sample_data_collector_plugin(data_collector_plugin):
 
   def initialize_plugin(self, **kwargs):
     try:
-      logger = logging.getLogger(self.__class__.__name__)
+      self.logger.debug("dhec_sample_data_collector_plugin initialize_plugin started.")
+
       self._plugin_details = kwargs['details']
+      self.logger.debug("dhec_sample_data_collector_plugin initialize_plugin finished.")
       return True
     except Exception as e:
-      logger.exception(e)
+      self.logger.exception(e)
     return False
 
   def run(self):
     try:
-      self.logging_client_cfg['disable_existing_loggers'] = True
       logger_conf = self._plugin_details.get('logging', 'scraperConfigFile')
-      #logging.config.dictConfig(self.logging_client_cfg)
       logging.config.fileConfig(logger_conf)
       logger = logging.getLogger()
       logger.debug("run started.")
