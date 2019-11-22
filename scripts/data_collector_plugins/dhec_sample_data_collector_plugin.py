@@ -21,7 +21,6 @@ from folly_wq_sites import folly_wq_sites
 class dhec_sample_data_collector_plugin(data_collector_plugin):
 
   def initialize_plugin(self, **kwargs):
-    data_collector_plugin.initialize_plugin(self, **kwargs)
     try:
       logger = logging.getLogger(self.__class__.__name__)
       self._plugin_details = kwargs['details']
@@ -158,4 +157,7 @@ class dhec_sample_data_collector_plugin(data_collector_plugin):
         import traceback
         traceback.print_exc(e)
 
+    return
+
+  def finalize(self):
     return
