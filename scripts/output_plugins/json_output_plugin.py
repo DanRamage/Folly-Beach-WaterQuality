@@ -8,8 +8,7 @@ from data_collector_plugin import data_collector_plugin
 class json_output_plugin(data_collector_plugin):
   def initialize_plugin(self, **kwargs):
     try:
-      data_collector_plugin.initialize_plugin(self, **kwargs)
-
+      self.logger.debug("json_output_plugin initialize_plugin started.")
       self._plugin_details = kwargs['details']
 
       self.json_outfile = self._plugin_details.get("Settings", "json_outfile")
@@ -18,6 +17,7 @@ class json_output_plugin(data_collector_plugin):
       self.execution_date= kwargs['execution_date'],
       self.prediction_date= kwargs['prediction_date'],
 
+      self.logger.debug("json_output_plugin initialize_plugin finished.")
       return True
     except Exception as e:
       self.logger.exception(e)
@@ -100,4 +100,7 @@ class json_output_plugin(data_collector_plugin):
       logger.debug("Finished json output in %f seconds." % (time.time()-start_time))
     except IOError,e:
       logger.exception(e)
+    return
+
+  def finalize(self):
     return
