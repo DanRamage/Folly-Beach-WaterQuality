@@ -327,11 +327,11 @@ class follybeach_prediction_engine(wq_prediction_engine):
           self.logger.error("Failed to initialize plugin: %s" % (plugin.details))
       except  Exception as e:
         self.logger.exception(e)
-      #Wait for the plugings to finish up.
-      self.logger.info("Waiting for %d plugins to complete." % (plugin_cnt))
-      for plugin in simplePluginManager.getAllPlugins():
-        plugin.plugin_object.join()
-        plugin.plugin_object.finalize()
+    #Wait for the plugings to finish up.
+    self.logger.info("Waiting for %d plugins to complete." % (plugin_cnt))
+    for plugin in simplePluginManager.getAllPlugins():
+      plugin.plugin_object.join()
+      plugin.plugin_object.finalize()
 
     self.logger.debug("%d output plugins run in %f seconds" % (plugin_cnt, time.time() - plugin_start_time))
     self.logger.info("Finished collect_data")
