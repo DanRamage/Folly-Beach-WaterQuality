@@ -3,14 +3,19 @@ sys.path.append('../commonfiles/python')
 import os
 import logging.config
 import time
+from datetime import datetime
 import json
 import urlparse
 import optparse
 import ConfigParser
+import pickle
 from dateutil import parser as du_parser
 from geojson import Point, FeatureCollection, Feature
 from rip_current_scraper import RipCurrentScraper
-
+from AlertStateMachine import SiteStates, NoAlertState, LowAlertState, MedAlertState, HiAlertState
+from mako.template import Template
+from mako import exceptions as makoExceptions
+from smtp_utils import smtpClass
 
 
 
@@ -85,6 +90,35 @@ class RipCurrentProcessor:
             self.logger.exception(e)
 
 
+def send_report(out_filename, site_states, template, prediction_date, mailhost, user, password, to_list, from_addr):
+    logger = logging.getLogger(__name__)
+
+    try:
+        mytemplate = Template(filename=template)
+
+        with open(out_filename, 'w') as report_out_file:
+            results_report = mytemplate.render(prediction_date=prediction_date,
+                                               rip_current_sites=site_states)
+            report_out_file.write(results_report)
+    except TypeError, e:
+        logger.exception(makoExceptions.text_error_template().render())
+    except (IOError, AttributeError, Exception) as e:
+        logger.exception(e)
+    else:
+        try:
+            subject = "Rip Current Alerts for %s" % (prediction_date)
+            # Now send the email.
+            smtp = smtpClass(host=mailhost, user=user, password=password)
+            smtp.rcpt_to(to_list)
+            smtp.from_addr(from_addr)
+            smtp.subject(subject)
+            smtp.message(results_report)
+            smtp.send(content_type="html")
+        except Exception as e:
+            logger.exception(e)
+    logger.debug("Finished emit for email output.")
+
+
 def main():
     parser = optparse.OptionParser()
     parser.add_option("-c", "--ConfigFile", dest="config_file",
@@ -109,10 +143,22 @@ def main():
         sys.exit(-1)
     else:
         try:
+            run_date = datetime.now()
             output_directory = config_file.get("Settings", "output_directory")
             files_to_process = config_file.get("Settings", "files_to_process").split(',')
             rip_current_file_url = config_file.get("Settings", "url")
             stations = config_file.get("Settings", "stations_ids").split(',')
+            email_ini_file = config_file.get("riptide_report", "email_settings_ini")
+            report_output_directory = config_file.get("riptide_report", "directory")
+            report_template = config_file.get("riptide_report", "report_template")
+
+            email_config = ConfigParser.RawConfigParser()
+            email_config.read(email_ini_file)
+            mailhost = email_config.get("rip_current_email_report", "mailhost")
+            user = email_config.get("rip_current_email_report", "user")
+            password = email_config.get("rip_current_email_report", "password")
+            to_list = email_config.get("rip_current_email_report", "toaddrs").split(',')
+            from_addr = email_config.get("rip_current_email_report", "fromaddr")
 
             rip_current = RipCurrentProcessor()
             rip_current.get(url=rip_current_file_url,
@@ -120,6 +166,59 @@ def main():
                                               output_directory=output_directory,
                                               stations=stations)
 
+            for file_name in files_to_process:
+                file_parts = os.path.splitext(file_name)
+
+                # Load the pickle states, if we have on.
+                pickle_outfile = os.path.join(output_directory, '%s.pickle' % (file_parts[0]))
+                if os.path.exists(pickle_outfile):
+                    logger.debug("Existing state file: %s loading." % (pickle_outfile))
+                    try:
+                        with open(pickle_outfile, "rb") as pickle_file:
+                            site_states = pickle.load(pickle_file)
+                            logger.debug("Existing state file: %s loaded." % (pickle_outfile))
+                    except Exception as e:
+                        logger.exception(e)
+                        site_states = SiteStates(None)
+                else:
+                    logger.debug("No existing state file: %s." % (pickle_outfile))
+                    site_states = SiteStates(None)
+
+                local_file = os.path.join(output_directory, '%s.json' % (file_parts[0]))
+                site_report_data = []
+                prediction_date = None
+                with open(local_file, 'r') as local_data_file:
+                    json_data = json.load(local_data_file)
+                    for feature in json_data['features']:
+                        props = feature['properties']
+                        site_id = props['id']
+                        prev_state = site_states.get_state(site_id)
+                        state = NoAlertState(site_id)
+                        if props['level'].lower() == 'high':
+                            state = HiAlertState(site_id)
+                        elif props['level'].lower() == 'moderate':
+                            state = MedAlertState(site_id)
+                        elif  props['level'].lower() == 'low':
+                            state = LowAlertState(site_id)
+                        if site_states.update_state(site_id, state):
+                            cur_state = site_states.get_state(site_id)
+                            logger.debug("Site: %s state change to: %s from %s" % (site_id, str(cur_state), str(prev_state)))
+                            site_report_data.append({
+                                'date': props['date'],
+                                'site_description': props['description'],
+                                'level': props['level'],
+                                'location': "%f, %f" % (feature['geometry']['coordinates'][0],feature['geometry']['coordinates'][1])
+                            })
+                        if prediction_date is None:
+                            prediction_date = props['date']
+                #Pickle state
+                with open(pickle_outfile, "wb") as pickle_file:
+                    pickle.dump(site_states, pickle_file)
+                if len(site_report_data):
+                    report_file_name = os.path.join(report_output_directory, "RipCurrentReport_%s.html" % (run_date.strftime('%Y_%m_%d-%H_%M_%S')))
+                    send_report(report_file_name, site_report_data, report_template, prediction_date, mailhost, user, password, to_list, from_addr)
+                else:
+                    logger.debug("No alerts to send.")
 
         except Exception as e:
             logger.exception(e)
