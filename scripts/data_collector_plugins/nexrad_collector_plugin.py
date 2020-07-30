@@ -4,7 +4,10 @@ import logging.config
 from data_collector_plugin import data_collector_plugin
 from datetime import datetime
 from pytz import timezone
-import ConfigParser
+if sys.version_info[0] < 3:
+  import ConfigParser
+else:
+  import configparser as ConfigParser
 import traceback
 import time
 from yapsy.IPlugin import IPlugin
