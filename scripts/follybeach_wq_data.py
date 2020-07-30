@@ -54,7 +54,7 @@ class follybeach_wq_data(wq_data):
         self.logger.error("Unable to connect to DB: %s at %s." %(kwargs['xenia_obs_db_name'],kwargs['xenia_obs_db_host']))
 
 
-    except Exception,e:
+    except Exception as e:
       self.logger.exception(e)
       raise
 

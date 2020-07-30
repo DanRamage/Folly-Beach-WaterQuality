@@ -380,7 +380,7 @@ def main():
           #Convert to UTC
           begin_date = est.astimezone(timezone('UTC'))
           dates_to_process.append(begin_date)
-      except Exception,e:
+      except Exception as e:
         if logger:
           logger.exception(e)
     else:
@@ -399,7 +399,7 @@ def main():
                         config_file_name=options.config_file)
         #run_wq_models(begin_date=process_date,
         #              config_file_name=options.config_file)
-    except Exception, e:
+    except Exception as e:
       logger.exception(e)
 
   if logger:
