@@ -36,7 +36,7 @@ class follybeach_prediction_engine(wq_prediction_engine):
       test_config_file = config_file.get(site_name, 'prediction_config')
       entero_lo_limit = config_file.getint('entero_limits', 'limit_lo')
       entero_hi_limit = config_file.getint('entero_limits', 'limit_hi')
-    except ConfigParser.Error, e:
+    except ConfigParser.Error as e:
         self.logger.exception(e)
     else:
       if len(test_config_file):
@@ -386,7 +386,7 @@ def main():
     else:
       #We are going to process the previous day, so we get the current date, set the time to midnight, then convert
       #to UTC.
-      est = datetime.now(timezone('US/Eastern'))
+      elst = datetime.now(timezone('US/Eastern'))
       est = est.replace(hour=0, minute=0, second=0,microsecond=0)
       #Convert to UTC
       begin_date = est.astimezone(timezone('UTC'))
