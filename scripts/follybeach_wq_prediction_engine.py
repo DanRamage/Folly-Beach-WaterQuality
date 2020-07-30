@@ -7,7 +7,10 @@ from datetime import datetime
 import optparse
 import time
 from pytz import timezone
-import ConfigParser
+if sys.version_info[0] < 3:
+  import ConfigParser
+else:
+  import configparser as ConfigParser
 from collections import OrderedDict
 import logging
 from yapsy.PluginManager import PluginManager
