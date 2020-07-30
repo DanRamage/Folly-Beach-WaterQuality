@@ -250,7 +250,7 @@ class follybeach_prediction_engine(wq_prediction_engine):
                 entero_stats.doCalculations()
 
               '''
-          except Exception,e:
+          except Exception as e:
             self.logger.exception(e)
 
       self.logger.debug("Total time to execute all sites models: %f ms" % (total_time * 1000))
