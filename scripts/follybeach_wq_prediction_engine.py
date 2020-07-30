@@ -389,7 +389,7 @@ def main():
     else:
       #We are going to process the previous day, so we get the current date, set the time to midnight, then convert
       #to UTC.
-      elst = datetime.now(timezone('US/Eastern'))
+      est = datetime.now(timezone('US/Eastern'))
       est = est.replace(hour=0, minute=0, second=0,microsecond=0)
       #Convert to UTC
       begin_date = est.astimezone(timezone('UTC'))
