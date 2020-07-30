@@ -147,7 +147,7 @@ class waterQualityAdvisory(object):
         
         if(self.logger):
           self.logger.info("JSON results written to file.")
-      except Exception,e:
+      except Exception as e:
         if(self.logger):
           self.logger.exception(e)
       destFile.close()
@@ -233,7 +233,7 @@ class waterQualityAdvisory(object):
         stationObj['date'] = stationObj['date'].strftime("%Y-%m-%d")
     try:
       outFile.write(geojson.dumps(jsonObj, sort_keys=True, indent=4 * ' '))      
-    except Exception,e:
+    except Exception as e:
       if(self.logger):
         self.logger.exception(e)
     outFile.close()  
@@ -452,7 +452,7 @@ class waterQualityAdvisory(object):
           station_data['results'] = sorted_data
         #with open("/Users/danramage/tmp/response.txt", "w") as outfile:
         #  outfile.write(str(response))
-    except Exception, e:
+    except Exception as e:
       if self.logger:
         self.logger.exception(e)
     if self.logger:
@@ -640,7 +640,7 @@ def main():
       logger.info("Log file opened.")
   except ConfigParser.Error, e:
     print("No log configuration file given, logging disabled.")
-  except Exception,e:
+  except Exception as e:
     import traceback
     traceback.print_exc(e)
     sys.exit(-1)
@@ -711,7 +711,7 @@ def main():
     except IOError,e:
       if(logger):
         logger.exception(e)
-    except Exception,e:
+    except Exception as e:
       if(logger):
         logger.exception(e)
     if(logger):
