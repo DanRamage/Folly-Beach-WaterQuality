@@ -18,7 +18,10 @@ sys.path.append('../commonfiles/python')
 #import requests
 import logging.config
 import optparse
-import ConfigParser
+if sys.version_info[0] < 3:
+  import ConfigParser
+else:
+  import configparser as ConfigParser
 import copy
 from lxml import etree    
 import geojson
