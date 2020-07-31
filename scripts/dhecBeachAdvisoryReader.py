@@ -15,30 +15,21 @@ webquery when nothing is returned. We look use the historical data for this case
 """
 import sys
 sys.path.append('../commonfiles/python')
-#import requests
 import logging.config
 import optparse
 if sys.version_info[0] < 3:
   import ConfigParser
 else:
   import configparser as ConfigParser
-import copy
-from lxml import etree    
 import geojson
 import json
-#import urllib
-#import urllib2
 import requests
-import socket 
 import datetime
 from pytz import timezone
 from dateutil import parser as du_parser
 
 import csv
-from decimal import *
-import httplib
 
-import suds
 from suds.client import Client
 from suds.xsd.doctor import Import, ImportDoctor
 
