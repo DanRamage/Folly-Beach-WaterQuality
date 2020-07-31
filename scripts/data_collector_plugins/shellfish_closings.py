@@ -1,9 +1,9 @@
+from data_collector_plugin import data_collector_plugin
 import sys
 sys.path.append('../')
 sys.path.append('../../commonfiles/python')
 import os
 import logging.config
-from data_collector_plugin import data_collector_plugin
 import traceback
 from datetime import datetime
 import time

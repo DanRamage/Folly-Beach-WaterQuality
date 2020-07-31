@@ -1,7 +1,7 @@
+from data_collector_plugin import data_collector_plugin
 import sys
 sys.path.append('../../commonfiles/python')
 import logging.config
-from data_collector_plugin import data_collector_plugin
 from datetime import datetime
 from pytz import timezone
 if sys.version_info[0] < 3:
