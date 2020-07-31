@@ -15,7 +15,7 @@ import pandas as pd
 class folly_camera_stats(my_plugin.data_collector_plugin):
 
   def __init__(self):
-    data_collector_plugin.__init__(self)
+    my_plugin.data_collector_plugin.__init__(self)
     self.output_queue = None
 
   def initialize_plugin(self, **kwargs):

@@ -1,6 +1,9 @@
 import sys
 sys.path.append('../../commonfiles/python')
 import data_collector_plugin as my_plugin
+from yapsy.IPlugin import IPlugin
+from multiprocessing import Process
+
 import os
 import logging.config
 import geojson
@@ -20,6 +23,9 @@ class dhec_sample_data_collector_plugin(my_plugin.data_collector_plugin):
 
   def initialize_plugin(self, **kwargs):
     try:
+      Process.__init__(self)
+      IPlugin.__init__(self)
+
       self.logger.debug("dhec_sample_data_collector_plugin initialize_plugin started.")
 
       self._plugin_details = kwargs['details']

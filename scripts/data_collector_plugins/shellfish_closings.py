@@ -13,7 +13,7 @@ import json
 class shellfish_closings(my_plugin.data_collector_plugin):
 
   def __init__(self):
-    data_collector_plugin.__init__(self)
+    my_plugin.data_collector_plugin.__init__(self)
 
     self.output_queue = None
 
