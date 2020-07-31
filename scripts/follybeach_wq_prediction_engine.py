@@ -337,7 +337,7 @@ class follybeach_prediction_engine(wq_prediction_engine):
       plugin.plugin_object.finalize()
 
     self.logger.debug("%d output plugins run in %f seconds" % (plugin_cnt, time.time() - plugin_start_time))
-    self.logger.info("Finished collect_data")
+    self.logger.info("Finished output_results")
 
 def main():
   parser = optparse.OptionParser()

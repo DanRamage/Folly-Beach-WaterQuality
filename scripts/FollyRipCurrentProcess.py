@@ -5,9 +5,16 @@ import logging.config
 import time
 from datetime import datetime
 import json
-import urlparse
+if sys.version_info[0] < 3:
+    import urlparse
+else:
+    import urllib.parse as urlparse
 import optparse
-import ConfigParser
+if sys.version_info[0] < 3:
+    import ConfigParser
+else:
+    import configparser as ConfigParser
+
 import pickle
 from dateutil import parser as du_parser
 from geojson import Point, FeatureCollection, Feature
@@ -15,7 +22,7 @@ from rip_current_scraper import RipCurrentScraper
 from AlertStateMachine import SiteStates, NoAlertState, LowAlertState, MedAlertState, HiAlertState
 from mako.template import Template
 from mako import exceptions as makoExceptions
-from smtp_utils import smtpClass
+#from smtp_utils import smtpClass
 
 
 
@@ -100,7 +107,7 @@ def send_report(out_filename, site_states, template, prediction_date, mailhost, 
             results_report = mytemplate.render(prediction_date=prediction_date,
                                                rip_current_sites=site_states)
             report_out_file.write(results_report)
-    except TypeError, e:
+    except TypeError as e:
         logger.exception(makoExceptions.text_error_template().render())
     except (IOError, AttributeError, Exception) as e:
         logger.exception(e)

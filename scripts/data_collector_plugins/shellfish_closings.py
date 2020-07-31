@@ -1,4 +1,4 @@
-from data_collector_plugin import data_collector_plugin
+from data_collector_plugin.data_collector_plugin as data_collector_plugin
 import sys
 sys.path.append('../')
 sys.path.append('../../commonfiles/python')
