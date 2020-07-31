@@ -1,7 +1,7 @@
-import data_collector_plugin as my_plugin
 import sys
 sys.path.append('../')
 sys.path.append('../../commonfiles/python')
+import data_collector_plugin as my_plugin
 import os
 import logging.config
 import traceback

@@ -1,6 +1,7 @@
-import data_collector_plugin as my_plugin
 import sys
 sys.path.append('../../commonfiles/python')
+import data_collector_plugin as my_plugin
+
 import logging.config
 from datetime import datetime
 from pytz import timezone
