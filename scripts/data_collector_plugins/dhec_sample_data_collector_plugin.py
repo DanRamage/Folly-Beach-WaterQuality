@@ -58,8 +58,8 @@ class dhec_sample_data_collector_plugin(my_plugin.data_collector_plugin):
       #The past WQ results.
       stationWQHistoryFile = self._plugin_details.get('stationData', 'stationWQHistoryFile')
 
-      dhec_rest_url = self._plugin_details.get('websettings', 'dhec_rest_url')
-      dhec_soap_url = self._plugin_details.get('websettings', 'dhec_soap_url')
+      dhec_rest_url = self._plugin_details.get('websettings', 'dhec_rest_url', raw=True)
+      dhec_soap_url = self._plugin_details.get('websettings', 'dhec_soap_url', raw=True)
       boundaries_location_file = self._plugin_details.get('boundaries_settings', 'boundaries_file')
       sites_location_file = self._plugin_details.get('boundaries_settings', 'sample_sites')
 
