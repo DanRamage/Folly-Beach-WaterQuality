@@ -1,4 +1,4 @@
-import data_collector_plugin.data_collector_plugin as data_collector_plugin
+import data_collector_plugin as my_plugin
 import sys
 sys.path.append('../')
 sys.path.append('../../commonfiles/python')
@@ -12,7 +12,7 @@ import json
 import numpy as np
 import pandas as pd
 
-class folly_camera_stats(data_collector_plugin):
+class folly_camera_stats(my_plugin.data_collector_plugin):
 
   def __init__(self):
     data_collector_plugin.__init__(self)

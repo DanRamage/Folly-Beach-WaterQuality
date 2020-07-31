@@ -1,4 +1,4 @@
-import data_collector_plugin.data_collector_plugin as data_collector_plugin
+import data_collector_plugin as my_plugin
 import sys
 sys.path.append('../../commonfiles/python')
 import os
@@ -16,7 +16,7 @@ from wq_output_results import wq_sample_data,wq_samples_collection,wq_advisories
 
 from folly_wq_sites import folly_wq_sites
 
-class dhec_sample_data_collector_plugin(data_collector_plugin):
+class dhec_sample_data_collector_plugin(my_plugin.data_collector_plugin):
 
   def initialize_plugin(self, **kwargs):
     try:

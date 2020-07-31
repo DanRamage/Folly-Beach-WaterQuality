@@ -1,4 +1,4 @@
-import data_collector_plugin.data_collector_plugin as data_collector_plugin
+import data_collector_plugin as my_plugin
 import sys
 sys.path.append('../')
 sys.path.append('../../commonfiles/python')
@@ -10,7 +10,7 @@ import time
 import requests
 import json
 
-class shellfish_closings(data_collector_plugin):
+class shellfish_closings(my_plugin.data_collector_plugin):
 
   def __init__(self):
     data_collector_plugin.__init__(self)

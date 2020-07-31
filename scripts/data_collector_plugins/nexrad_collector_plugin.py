@@ -1,4 +1,4 @@
-import data_collector_plugin.data_collector_plugin as data_collector_plugin
+import data_collector_plugin as my_plugin
 import sys
 sys.path.append('../../commonfiles/python')
 import logging.config
@@ -15,7 +15,7 @@ from multiprocessing import Process
 
 from wqXMRGProcessing import wqXMRGProcessing
 
-class nexrad_collector_plugin(data_collector_plugin):
+class nexrad_collector_plugin(my_plugin.data_collector_plugin):
 
   def initialize_plugin(self, **kwargs):
     try:
