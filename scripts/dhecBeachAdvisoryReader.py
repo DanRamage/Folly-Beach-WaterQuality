@@ -94,7 +94,7 @@ class waterQualityAdvisory(object):
       if(self.logger):
         self.logger.info("Opened output file: %s" % (geoJSONOutfile))
         
-    except IOError,e:
+    except IOError as e:
       if(self.logger):
         self.logger.exception(e)
     else:
@@ -113,7 +113,7 @@ class waterQualityAdvisory(object):
                 longitude = float(line['longitude'].strip())
 
                 geometry = geojson.Point(coordinates=[longitude, latitude])
-              except ValueError,e:
+              except ValueError as e:
                 if(self.logger):
                   self.logger.error("Line: %d invalid value for either latitude or longitude" % (lineCnt))
                 continue
@@ -136,15 +136,15 @@ class waterQualityAdvisory(object):
                 #Create the geoJson feature object
                 feature = geojson.Feature(id=properties['station'], geometry=geometry, properties=properties)
                 features.append(feature)
-                
+
                 if(self.logger):
                   self.logger.info("Adding station: %s" % (properties['station']))
-          lineCnt += 1 
+          lineCnt += 1
         featureColl = geojson.FeatureCollection(features=features)
-  
+
         destFile.write(geojson.dumps(featureColl, separators=(',', ':')))
         #destFile.write(geojson.dumps(featureColl, sort_keys=True, indent=4 * ' '))
-        
+
         if(self.logger):
           self.logger.info("JSON results written to file.")
       except Exception as e:
@@ -210,18 +210,18 @@ class waterQualityAdvisory(object):
           else:
             jsonObj[line['STATION']] = stationData
             #jsonObj[line['Station']] = stationData
-          
+
           #dateVal = datetime.datetime.strptime(line['Inspection Date'], "%d-%b-%y")
           #dateVal = datetime.datetime.strptime(line['Inspection Date'], "%m/%d/%Y")
           dateVal = datetime.datetime.strptime(line['COLLECTION DATE'], "%m/%d/%y %H:%M")
-          
-          #timeVal = datetime.datetime.strptime(line['Insp Time'], "%H%M")          
+
+          #timeVal = datetime.datetime.strptime(line['Insp Time'], "%H%M")
           #dateVal += (' ' + timeVal.strftime("%H:%M:00"))
           #dateVal = datetime.datetime.strptime(dateVal, "%Y-%m-%d %H:%M:00")
           #stationDict[dateVal] = line['ETCOC']
           wqObj = {'date' : dateVal, 'value' : line['ETCOC']}
           stationData.append(wqObj)
-          
+
         lineNum += 1
     #Sort
     for index,dataObj in enumerate(jsonObj):
@@ -232,12 +232,12 @@ class waterQualityAdvisory(object):
         #stationObj['date'] = stationObj['date'].strftime("%Y-%m-%d %H:%M:00")
         stationObj['date'] = stationObj['date'].strftime("%Y-%m-%d")
     try:
-      outFile.write(geojson.dumps(jsonObj, sort_keys=True, indent=4 * ' '))      
+      outFile.write(geojson.dumps(jsonObj, sort_keys=True, indent=4 * ' '))
     except Exception as e:
       if(self.logger):
         self.logger.exception(e)
-    outFile.close()  
-    inputFile.close()        
+    outFile.close()
+    inputFile.close()
     return(jsonObj)
   """
   Function: processData
@@ -472,7 +472,7 @@ class waterQualityAdvisory(object):
   """
   def __outputGeoJson(self, stationNfoList, resultsData, jsonOutputFilepath):
     if(self.logger):
-      self.logger.info("Outputting JSON file.")    
+      self.logger.info("Outputting JSON file.")
     features = []
     missing_stations = []
     for stationData in stationNfoList['features']:
@@ -504,7 +504,7 @@ class waterQualityAdvisory(object):
 
       try:
         fullPath = "%s/%s.json" % (jsonOutputFilepath, stationName)
-        jsonFile = open(fullPath, "w") 
+        jsonFile = open(fullPath, "w")
         if(self.logger):
           self.logger.info("Opened JSON file: %s" % (fullPath))
         jsonFile.write(geojson.dumps(feature, separators=(',', ':')))
@@ -512,10 +512,10 @@ class waterQualityAdvisory(object):
         if(self.logger):
           self.logger.info("JSON results written to file.")
         jsonFile.close()
-      except IOError,e:
+      except IOError as e:
         if(self.logger):
           self.logger.exception(e)
-          
+
       #After the individual station file is written, we reset the properties['test']['beachadvisories'] to contain
       #only the latest sample data.
       if stationName in resultsData:
@@ -531,7 +531,7 @@ class waterQualityAdvisory(object):
     collection = geojson.FeatureCollection(features=features)
     try:
       fullPath = "%s/beachAdvisoryResults.json" % (jsonOutputFilepath)
-      jsonFile = open(fullPath, "w") 
+      jsonFile = open(fullPath, "w")
       if(self.logger):
         self.logger.info("Opened JSON file: %s" % (fullPath))
 
@@ -543,7 +543,7 @@ class waterQualityAdvisory(object):
       if(self.logger):
         self.logger.info("JSON results written to file.")
       jsonFile.close()
-    except IOError,e:
+    except IOError as e:
       if(self.logger):
         self.logger.exception(e)
 
@@ -614,7 +614,7 @@ class waterQualityAdvisory(object):
 
 
 def main():
-    
+
   parser = optparse.OptionParser()
   parser.add_option("-c", "--ConfigFile", dest="configFile",
                     help="INI Configuration file." )
@@ -623,11 +623,11 @@ def main():
   parser.add_option("-t", "--ImportStationsTestResultsFile", dest="importStationsTestResultsFile",
                     help="Stations file to import." )
   (options, args) = parser.parse_args()
-  
+
   if(options.configFile is None):
     parser.print_help()
     sys.exit(-1)
-    
+
   try:
     configFile = ConfigParser.RawConfigParser()
     configFile.read(options.configFile)
@@ -644,17 +644,17 @@ def main():
     import traceback
     traceback.print_exc(e)
     sys.exit(-1)
-      
-  try:  
-    #Base URL to the page that house an individual stations results. 
+
+  try:
+    #Base URL to the page that house an individual stations results.
     baseUrl = configFile.get('websettings', 'baseAdvisoryPageUrl')
 
     #output Filename for the JSON data.
     jsonFilepath = configFile.get('output', 'outputDirectory')
-    
+
     #Filepath to the geoJSON file that contains the station data for all the stations.
     stationGeoJsonFile = configFile.get('stationData', 'stationGeoJsonFile')
-    
+
     #The past WQ results.
     stationWQHistoryFile = configFile.get('stationData', 'stationWQHistoryFile')
 
@@ -664,7 +664,7 @@ def main():
   except ConfigParser.Error, e:
     if(logger):
       logger.exception(e)
-  
+
   else:
     """
     #Connect to the DHEC sqlite database. We query the monitoring station platforms so we have a list
@@ -690,25 +690,25 @@ def main():
         sys.exit(-1)
         
     dbObj.DB.close()
-    """  
-    try:      
+    """
+    try:
       advisoryObj = waterQualityAdvisory(baseUrl, True)
       if(options.importStationsTestResultsFile):
         advisoryObj.createHistoricalJSON(options.importStationsTestResultsFile, "/Users/danramage/tmp/dhec/monitorstations/historicalWQ.json")
       if(options.importStations):
-        advisoryObj.createStationGeoJSON(options.importStations, stationGeoJsonFile)      
+        advisoryObj.createStationGeoJSON(options.importStations, stationGeoJsonFile)
       else:
         #See if we have a historical WQ file, if so let's use that as well.
         historyWQFile = open(stationWQHistoryFile, "r")
         historyWQ = geojson.load(historyWQFile)
-        
+
         #advisoryObj.processData(stationList, jsonFilepath, historyWQ, dhec_rest_url)
         advisoryObj.processData(geo_json_file=stationGeoJsonFile,
                                 json_file_path=jsonFilepath,
                                 historical_wq=historyWQ,
                                 dhec_url=dhec_rest_url,
                                 post_data_url=sample_data_post_url)
-    except IOError,e:
+    except IOError as e:
       if(logger):
         logger.exception(e)
     except Exception as e:
