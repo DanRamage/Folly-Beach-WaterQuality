@@ -194,7 +194,7 @@ class waterQualityAdvisory(object):
       inputFile = open(inputFilename, 'rU')
       dataFile = csv.DictReader(inputFile, fieldNames)
       outFile = open(outputFilename, 'w')
-    except IOError, e:
+    except IOError as e:
       if(self.logger):
         self.logger.exception(e)
     else:
@@ -638,7 +638,7 @@ def main():
       logging.config.fileConfig(logConfFile)
       logger = logging.getLogger("dhec_beach_advisory_app")
       logger.info("Log file opened.")
-  except ConfigParser.Error, e:
+  except ConfigParser.Error as e:
     print("No log configuration file given, logging disabled.")
   except Exception as e:
     import traceback
@@ -661,7 +661,7 @@ def main():
     dhec_rest_url = configFile.get('websettings', 'dhec_rest_url')
 
     sample_data_post_url = configFile.get('sample_data_rest', 'url')
-  except ConfigParser.Error, e:
+  except ConfigParser.Error as e:
     if(logger):
       logger.exception(e)
 
