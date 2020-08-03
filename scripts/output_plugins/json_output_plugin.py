@@ -95,10 +95,10 @@ class json_output_plugin(data_collector_plugin):
         try:
           logger.debug("Writing JSON file: %s" % (self.json_outfile))
           json_output_file.write(json.dumps(json_data, sort_keys=True))
-        except Exception,e:
+        except Exception as e:
           logger.exception(e)
       logger.debug("Finished json output in %f seconds." % (time.time()-start_time))
-    except IOError,e:
+    except IOError as e:
       logger.exception(e)
     return
 
