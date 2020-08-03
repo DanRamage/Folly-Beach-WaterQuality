@@ -70,9 +70,9 @@ class shellfish_closings(my_plugin.data_collector_plugin):
                 output_file.write(json.dumps(shellfish_areas))
         else:
             logger.error("DHEC REST query failed, code: %d" % (req.status_code))
-        logger.debug("dhec_shellfish_closures run finished in %f seconds." % (time.time()-start_time))
     except Exception as e:
         logger.exception(e)
+    logger.debug("dhec_shellfish_closures run finished in %f seconds." % (time.time()-start_time))
 
   def finalize(self):
     return
