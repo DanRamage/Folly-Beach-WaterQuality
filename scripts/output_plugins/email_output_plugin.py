@@ -79,7 +79,7 @@ class email_output_plugin(data_collector_plugin):
                                                   execution_date=self.execution_date,
                                                   report_url=report_url)
           report_out_file.write(results_report)
-      except TypeError,e:
+      except TypeError as e:
           logger.exception(makoExceptions.text_error_template().render())
       except (IOError,AttributeError,Exception) as e:
           logger.exception(e)
