@@ -19,6 +19,7 @@ class folly_camera_stats(my_plugin.data_collector_plugin):
     self.output_queue = None
 
   def initialize_plugin(self, **kwargs):
+    '''
     try:
       plugin_details = kwargs['details']
       self._data_files = plugin_details.get("Settings", "data_files").split(',')
@@ -29,8 +30,10 @@ class folly_camera_stats(my_plugin.data_collector_plugin):
     except Exception as e:
       self.logger.exception(e)
     return False
-
+    '''
+    return True
   def run(self):
+    return
     try:
         start_time = time.time()
         logger = None
