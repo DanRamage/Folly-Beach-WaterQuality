@@ -23,7 +23,7 @@ class shellfish_closings(my_plugin.data_collector_plugin):
         plugin_details = kwargs['details']
         self._log_conf = plugin_details.get("Settings", "logfile")
         self._output_file = plugin_details.get("Settings", "output_file")
-        self._rest_request = plugin_details.get("Settings", "rest_request")
+        self._rest_request = plugin_details.get("Settings", "rest_request", raw=True)
 
         return True
     except Exception as e:
