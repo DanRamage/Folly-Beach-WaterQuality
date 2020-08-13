@@ -30,11 +30,6 @@ class nexrad_collector_plugin(my_plugin.data_collector_plugin):
       self.log_config = self.plugin_details.get("Settings", "log_config")
       self.xmrg_workers_logfile = self.plugin_details.get("Settings", "xmrg_log_file")
       self._logger_name = 'nexrad_mp_logging'
-      mp_logging = MainLogConfig(log_filename=self.xmrg_workers_logfile,
-                                 logname=self._logger_name,
-                                 level=logging.DEBUG,
-                                 disable_existing_loggers=False)
-      mp_logging.setup_logging()
 
 
       return True
@@ -49,6 +44,11 @@ class nexrad_collector_plugin(my_plugin.data_collector_plugin):
       #Setup multiprocess logging for the xmrg workers.
       #logging.config.fileConfig(self.log_config)
       #logger = logging.getLogger(self.__class__.__name__)
+      mp_logging = MainLogConfig(log_filename=self.xmrg_workers_logfile,
+                                 logname=self._logger_name,
+                                 level=logging.DEBUG,
+                                 disable_existing_loggers=False)
+      mp_logging.setup_logging()
 
       logger = logging.getLogger(self._logger_name)
       logger.debug("run started.")
