@@ -47,10 +47,11 @@ class nexrad_collector_plugin(my_plugin.data_collector_plugin):
       mp_logging = MainLogConfig(log_filename=self.xmrg_workers_logfile,
                                  logname=self._logger_name,
                                  level=logging.DEBUG,
-                                 disable_existing_loggers=False)
+                                 disable_existing_loggers=True)
       mp_logging.setup_logging()
 
       logger = logging.getLogger(self._logger_name)
+      #logger = mp_logging.getLogger()
       logger.debug("run started.")
 
       config_file = ConfigParser.RawConfigParser()
@@ -65,7 +66,7 @@ class nexrad_collector_plugin(my_plugin.data_collector_plugin):
         logger.exception(e)
     else:
       try:
-        xmrg_proc = wqXMRGProcessing(logger=True, logger_name=self._logger_name)
+        xmrg_proc = wqXMRGProcessing(logger=True, logger_name=self._logger_name, logger_config=mp_logging.getClientConfigDict())
         xmrg_proc.load_config_settings(config_file = self.ini_file)
 
         start_date_time = timezone('US/Eastern').localize(datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)).astimezone(timezone('UTC'))
