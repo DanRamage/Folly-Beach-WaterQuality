@@ -21,6 +21,8 @@ class nexrad_collector_plugin(my_plugin.data_collector_plugin):
 
   def initialize_plugin(self, **kwargs):
     try:
+      self._start_plugin_time = time.time()
+
       Process.__init__(self)
       IPlugin.__init__(self)
 
@@ -114,4 +116,7 @@ class nexrad_collector_plugin(my_plugin.data_collector_plugin):
     return
 
   def finalize(self):
+    logger = logging.getLogger(self.__class__.__name__)
+    logger.debug("finalize called, total time: %f" % (time.time() - self._start_plugin_time))
+
     return
