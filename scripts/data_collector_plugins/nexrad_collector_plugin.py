@@ -31,13 +31,6 @@ class nexrad_collector_plugin(my_plugin.data_collector_plugin):
       self.xmrg_workers_logfile = self.plugin_details.get("Settings", "xmrg_log_file")
       self._logger_name = 'nexrad_mp_logging'
 
-      print("1")
-      mp_logging = MainLogConfig(log_filename=self.xmrg_workers_logfile,
-                                 logname=self._logger_name,
-                                 level=logging.DEBUG,
-                                 disable_existing_loggers=True)
-      print("2")
-      mp_logging.setup_logging()
 
       return True
     except Exception as e:
@@ -51,14 +44,21 @@ class nexrad_collector_plugin(my_plugin.data_collector_plugin):
       #Setup multiprocess logging for the xmrg workers.
       #logging.config.fileConfig(self.log_config)
       #logger = logging.getLogger(self.__class__.__name__)
+      print("1")
+      mp_logging = MainLogConfig(log_filename=self.xmrg_workers_logfile,
+                                 logname=self._logger_name,
+                                 level=logging.DEBUG,
+                                 disable_existing_loggers=True)
+      print("2")
+      mp_logging.setup_logging()
 
-      print("4")
+      print("3")
       logger = logging.getLogger(self._logger_name)
       #logger = mp_logging.getLogger()
-      print("5")
+      print("4")
       logger.debug("run started.")
 
-      print("6")
+      print("5")
       config_file = ConfigParser.RawConfigParser()
       config_file.read(self.ini_file)
       backfill_hours = config_file.getint('nexrad_database', 'backfill_hours')
