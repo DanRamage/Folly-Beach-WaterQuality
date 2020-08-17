@@ -15,7 +15,6 @@ from yapsy.IPlugin import IPlugin
 from multiprocessing import Process
 
 from wqXMRGProcessing import wqXMRGProcessing
-from multi_process_logging import MainLogConfig
 
 class nexrad_collector_plugin(my_plugin.data_collector_plugin):
 
@@ -45,13 +44,6 @@ class nexrad_collector_plugin(my_plugin.data_collector_plugin):
       start_time = time.time()
       logging.config.fileConfig(self.log_config)
       logger = logging.getLogger()
-      '''
-      mp_logging = MainLogConfig(log_filename=self.xmrg_workers_logfile,
-                                 logname=self._logger_name,
-                                 level=logging.DEBUG,
-                                 disable_existing_loggers=True)
-      mp_logging.setup_logging()
-      '''
       #logger = mp_logging.getLogger()
       logger.debug("run started.")
 
@@ -112,7 +104,6 @@ class nexrad_collector_plugin(my_plugin.data_collector_plugin):
         logger.exception(e)
       logger.debug("run finished in %f seconds" % (time.time()-start_time))
 
-      #mp_logging.shutdown_logging()
     return
 
   def finalize(self):
