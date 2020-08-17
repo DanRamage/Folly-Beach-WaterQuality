@@ -41,24 +41,18 @@ class nexrad_collector_plugin(my_plugin.data_collector_plugin):
     logger = None
     try:
       start_time = time.time()
-      #Setup multiprocess logging for the xmrg workers.
-      #logging.config.fileConfig(self.log_config)
-      #logger = logging.getLogger(self.__class__.__name__)
-      print("1")
+      logging.config.fileConfig(self.log_config)
+      logger = logging.getLogger()
+      '''
       mp_logging = MainLogConfig(log_filename=self.xmrg_workers_logfile,
                                  logname=self._logger_name,
                                  level=logging.DEBUG,
                                  disable_existing_loggers=True)
-      print("2")
       mp_logging.setup_logging()
-
-      print("3")
-      logger = logging.getLogger(self._logger_name)
+      '''
       #logger = mp_logging.getLogger()
-      print("4")
       logger.debug("run started.")
 
-      print("5")
       config_file = ConfigParser.RawConfigParser()
       config_file.read(self.ini_file)
       backfill_hours = config_file.getint('nexrad_database', 'backfill_hours')
@@ -71,7 +65,36 @@ class nexrad_collector_plugin(my_plugin.data_collector_plugin):
         logger.exception(e)
     else:
       try:
-        xmrg_proc = wqXMRGProcessing(logger=True, logger_name=self._logger_name, logger_config=mp_logging.getClientConfigDict())
+        logging_config = {
+            'version': 1,
+            'disable_existing_loggers': False,
+            'formatters': {
+                'f': {
+                    'format': "%(asctime)s,%(levelname)s,%(funcName)s,%(lineno)d,%(message)s",
+                    'datefmt': '%Y-%m-%d %H:%M:%S'
+                }
+            },
+            'handlers': {
+                'stream': {
+                    'class': 'logging.StreamHandler',
+                    'formatter': 'f',
+                    'level': logging.DEBUG
+                },
+                'file_handler': {
+                    'class': 'logging.handlers.RotatingFileHandler',
+                    'filename': self.xmrg_workers_logfile,
+                    'formatter': 'f',
+                    'level': logging.DEBUG
+                }
+            },
+            'root': {
+                'handlers': ['file_handler'],
+                'level': logging.NOTSET,
+                'propagate': False
+            }
+        }
+
+        xmrg_proc = wqXMRGProcessing(logger=True, logger_name=self._logger_name, logger_config=logging_config)
         xmrg_proc.load_config_settings(config_file = self.ini_file)
 
         start_date_time = timezone('US/Eastern').localize(datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)).astimezone(timezone('UTC'))
@@ -87,7 +110,7 @@ class nexrad_collector_plugin(my_plugin.data_collector_plugin):
         logger.exception(e)
       logger.debug("run finished in %f seconds" % (time.time()-start_time))
 
-      mp_logging.shutdown_logging()
+      #mp_logging.shutdown_logging()
     return
 
   def finalize(self):
