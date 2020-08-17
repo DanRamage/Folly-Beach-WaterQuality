@@ -9,7 +9,7 @@ Website = http://howsthebeach.org
 Description = Myrtle Beach specific nexrad data processing.
 
 [Settings]
-ini_file=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/folly_prediction_engine.ini
-log_config=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logconf/folly_nexrad_plugin.conf
+ini_file=/home/xeniaprod/scripts/Folly-Beach-WaterQuality/config/folly_prediction_engine.ini
+log_config=/home/xeniaprod/scripts/Folly-Beach-WaterQuality/config/logconf/folly_nexrad_plugin.conf
 xmrg_log_file=/home/xeniaprod/tmp/log/folly_nexrad_workers.log
 
