@@ -1,0 +1,17 @@
+[Core]
+Name = Rip Current Predictions
+Module = rip_current_plugin
+
+[Documentation]
+Author = Dan Ramage
+Version = 0.1
+Website = http://howsmyscriver.org
+Description = Checks for the rip current predictions
+
+[Settings]
+ini_file=
+logfile=/home/xeniaprod/scripts/Folly-Beach-WaterQuality/config/logconf/folly_rip_current_debug.conf
+output_directory=/mnt/wq_feeds/follybeach/ripcurrent
+url=https://polar.ncep.noaa.gov/nwps/para/images/rtimages/validation/
+files_to_process=CHS1.rip
+stations_ids=chs_ripprob_stat119,chs_ripprob_stat120,chs_ripprob_stat121,chs_ripprob_stat122,chs_ripprob_stat123,chs_ripprob_stat124
