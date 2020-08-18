@@ -8,7 +8,10 @@ import traceback
 from datetime import datetime
 import time
 import json
-import urlparse
+if sys.version_info[0] < 3:
+    import urlparse
+else:
+    from urllib import parse as urlparse
 import dateutil
 from rip_current_scraper import RipCurrentScraper
 
