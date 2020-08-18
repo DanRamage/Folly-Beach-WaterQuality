@@ -10,8 +10,8 @@ Website = http://howsthebeach.org
 Description = Requests the sample data and station metadata from DHEC.
 
 [logging]
-scraperConfigFile = /home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logconf/folly_dhec_scraper.conf
-handlerConfigFile = /home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logconf/folly_dhec_scraper.conf
+scraperConfigFile = /home/xeniaprod/scripts/Folly-Beach-WaterQuality/config/logconf/folly_dhec_scraper.conf
+handlerConfigFile = /home/xeniaprod/scripts/Folly-Beach-WaterQuality/config/logconf/folly_dhec_scraper.conf
 
 [websettings]
 #baseAdvisoryPageUrl=http://www.scdhec.gov/environment/water/beachdata
@@ -39,5 +39,5 @@ charlestonPredictionFile=/mnt/wq_feeds/charleston/Predictions.json
 url=http://dev.howsthebeach.org/station_data/follybeach/{station_name}?sampledate={date}&value={value}
 
 [boundaries_settings]
-boundaries_file=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/boundaries.csv
-sample_sites=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/sampling_stations_full.csv
+boundaries_file=/home/xeniaprod/scripts/Folly-Beach-WaterQuality/config/boundaries.csv
+sample_sites=/home/xeniaprod/scripts/Folly-Beach-WaterQuality/config/sampling_stations_full.csv

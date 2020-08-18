@@ -165,3 +165,4 @@ class dhec_sample_data_collector_plugin(my_plugin.data_collector_plugin):
 
   def finalize(self):
     return
+
