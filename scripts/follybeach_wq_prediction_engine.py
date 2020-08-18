@@ -101,9 +101,9 @@ class follybeach_prediction_engine(wq_prediction_engine):
     try:
       simplePluginManager = PluginManager()
 
-      #yapsy_log = logging.getLogger('yapsy')
-      #yapsy_log.setLevel(logging.DEBUG)
-      #yapsy_log.disabled = False
+      yapsy_log = logging.getLogger('yapsy')
+      yapsy_log.setLevel(logging.DEBUG)
+      yapsy_log.disabled = False
 
       simplePluginManager.setCategoriesFilter({
          "DataCollector": data_collector_plugin
