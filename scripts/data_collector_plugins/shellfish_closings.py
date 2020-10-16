@@ -62,7 +62,7 @@ class shellfish_closings(my_plugin.data_collector_plugin):
                             logger.debug("ID: %d Area: %s" % (obj_id, area))
                             shellfish_areas[area] = {'SF_AREA' : area,
                                                        'OBJECTID': obj_id,
-                                                       'Storm_Closure': attr['Storm_Closure'],
+                                                       'Storm_Closure': attr['Closures'],
                                                         'date_time_last_check': last_check.strftime('%Y-%m-%d %H:%M')}
 
             with open(self._output_file, 'w') as output_file:
