@@ -10,7 +10,7 @@ Description = Checks for the rip current predictions
 
 [Settings]
 ini_file=
-logfile=/home/xeniaprod/scripts/Folly-Beach-WaterQuality/config/logconf/folly_rip_current.conf
+logfile=/home/xeniaprod/scripts/FollyBeach-WaterQuality/config/logconf/folly_rip_current.conf
 output_directory=/mnt/wq_feeds/follybeach/ripcurrent
 url=https://polar.ncep.noaa.gov/nwps/para/images/rtimages/validation/
 files_to_process=CHS1.rip
