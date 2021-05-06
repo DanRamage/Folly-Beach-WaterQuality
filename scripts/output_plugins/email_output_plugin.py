@@ -5,7 +5,6 @@ from mako.template import Template
 from mako import exceptions as makoExceptions
 from smtp_utils import smtpClass
 import os
-import sys
 if sys.version_info[0] < 3:
   import ConfigParser
 else:
