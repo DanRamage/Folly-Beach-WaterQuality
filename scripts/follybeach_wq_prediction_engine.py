@@ -211,7 +211,7 @@ class follybeach_prediction_engine(wq_prediction_engine):
                 model_data_dir = config_file.get(site.name, 'data_directory')
 
                 wq_data = follybeach_wq_data(xenia_nexrad_db_name=xenia_nexrad_db_file,
-                                             xenia_obs_db_type='postgres',
+                                             xenia_obs_db_type='postgresql',
                                              xenia_obs_db_host=xenia_obs_db_host,
                                              xenia_obs_db_user=xenia_obs_db_user,
                                              xenia_obs_db_password=xenia_obs_db_password,
