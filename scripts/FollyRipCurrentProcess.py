@@ -34,7 +34,7 @@ class RipCurrentProcessor:
         url = kwargs['url']
         output_directory = kwargs['output_directory']
         last_check = datetime.now()
-
+        station_settings = kwargs['station_settings']
         self.logger.debug("Querying url: %s" % (url))
         try:
             req = requests.get(url)
@@ -43,6 +43,9 @@ class RipCurrentProcessor:
                 json_data = req.json()
                 for key in json_data:
                     json_data[key]['date'] = last_check.strftime('%Y-%m-%d %H:%M')
+                    if key in station_settings:
+                        json_data[key]['wfo'] = station_settings[key]
+
                 json.dump(json_data, json_file, indent=4)
         except Exception as e:
             self.logger.exception(e)
@@ -103,6 +106,7 @@ def main():
         sys.exit(-1)
     else:
         try:
+            station_settings = {}
             run_date = datetime.now()
             output_directory = config_file.get("Settings", "output_directory")
             rip_current_file_url = config_file.get("Settings", "url")
@@ -110,6 +114,11 @@ def main():
             email_ini_file = config_file.get("riptide_report", "email_settings_ini")
             report_output_directory = config_file.get("riptide_report", "directory")
             report_template = config_file.get("riptide_report", "report_template")
+
+            #We need to have some station centric info, such as the link to the wfo.
+            for station in stations:
+                wfo = config_file.get(station, "wfo")
+                station_settings[station] = wfo
 
             email_config = ConfigParser.RawConfigParser()
             email_config.read(email_ini_file)
@@ -122,7 +131,7 @@ def main():
             rip_current = RipCurrentProcessor()
             rip_current.get(url=rip_current_file_url,
                               output_directory=output_directory,
-                              stations=stations)
+                              station_settings=station_settings)
         except Exception as e:
             logger.exception(e)
         logger.info("Log file closed.")
