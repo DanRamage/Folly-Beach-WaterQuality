@@ -44,7 +44,8 @@ class RipCurrentProcessor:
                 for key in json_data:
                     json_data[key]['date'] = last_check.strftime('%Y-%m-%d %H:%M')
                     if key in station_settings:
-                        json_data[key]['wfo'] = station_settings[key]
+                        json_data[key]['wfo_url'] = station_settings[key]['wfo_url']
+                        json_data[key]['guidance_url'] = station_settings[key]['guidance_url']
 
                 json.dump(json_data, json_file, indent=4)
         except Exception as e:
@@ -117,8 +118,11 @@ def main():
 
             #We need to have some station centric info, such as the link to the wfo.
             for station in stations:
-                wfo = config_file.get(station, "wfo")
-                station_settings[station] = wfo
+                station_settings[station] = {}
+                url = config_file.get(station, "wfo_url")
+                station_settings[station]['wfo_url'] = url
+                url = config_file.get(station, "guidance_url")
+                station_settings[station]['guidance_url'] = url
 
             email_config = ConfigParser.RawConfigParser()
             email_config.read(email_ini_file)
