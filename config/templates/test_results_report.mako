@@ -3,8 +3,8 @@
 <html lang="en">
     <head>
       <meta name="viewport" content="width=device-width, initial-scale=1">
-      <link href="http://howsthebeach.org/static/css/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-      <link href=http://howsthebeach.org//static/css/bootstrap/css/css/bootstrap-theme.min.css" rel="stylesheet">
+      <link href="http://howsthebeach.org/static/css/bootstrap.min.css" rel="stylesheet">
+      <link href=http://howsthebeach.org//static/css/css/bootstrap-theme.min.css" rel="stylesheet">
 
       <title>Folly Beach Water Quality Prediction Results</title>
     </head>
