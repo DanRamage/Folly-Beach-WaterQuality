@@ -142,7 +142,7 @@ class xgb_ensemble(wqEquations):
           sum = 0
           for model in self._models:
             if model.prediction_level.value == prediction_levels.LOW or\
-                model.prediction_level.value != prediction_levels.HIGH:
+                model.prediction_level.value == prediction_levels.HIGH:
                 sum += model.prediction_level.value
                 executed_tests += 1
 
