@@ -15,7 +15,7 @@ class prediction_levels(object):
   def __init__(self, value):
     self.__value = value
   def __str__(self):
-    if self.value == self.LOW:
+    if self.value >= self.LOW and self.value < self.HIGH:
       return "LOW"
     elif self.value == self.HIGH:
       return "HIGH"
