@@ -1,0 +1,17 @@
+[Core]
+Name = DHEC Shellfish CLosures
+Module = shellfish_closings
+
+[Documentation]
+Author = Dan Ramage
+Version = 0.1
+Website = http://howsmyscriver.org
+Description = Checks for a recently emailed bacteria sample report.
+
+[Settings]
+ini_file=/Users/danramage/Documents/workspace/WaterQuality/Saluda-River-Project/config/sc_rivers_engine_debug.ini
+logfile=/Users/danramage/Documents/workspace/WaterQuality/FollyBeach-WaterQuality/config/logconf/camera_stats_debug.conf
+output_file=/Users/danramage/Documents/workspace/WaterQuality/FollyBeach-WaterQuality/data/shellfish/shellfish_closures.json
+rest_request=https://services2.arcgis.com/XZg2efAbaieYAXmu/arcgis/rest/services/Shellfish_Temp_Closures_View/FeatureServer/0/query?f=json&where=1=1&spatialRel=esriSpatialRelIntersects&geometry={%22xmin%22:-9356861.736375863,%22ymin%22:3716399.5873283646,%22xmax%22:-8372964.308289124,%22ymax%22:4054557.000461967,%22spatialReference%22:{%22wkid%22:102100}}&geometryType=esriGeometryEnvelope&inSR=102100&outFields=OBJECTID,Area_Class,Closures&orderByFields=OBJECTID&outSR=4326
+
+#rest_request=https://services2.arcgis.com/XZg2efAbaieYAXmu/arcgis/rest/services/Shellfish_Temp_Closures_View/FeatureServer/0/query?f=json&where=1=1&spatialRel=esriSpatialRelIntersects&geometry={%22xmin%22:-9356861.736375863,%22ymin%22:3716399.5873283646,%22xmax%22:-8372964.308289124,%22ymax%22:4054557.000461967,%22spatialReference%22:{%22wkid%22:102100}}&geometryType=esriGeometryEnvelope&inSR=102100&outFields=OBJECTID,SF_AREA,Closures&orderByFields=OBJECTID&outSR=4326
