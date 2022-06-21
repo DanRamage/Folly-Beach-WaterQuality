@@ -200,7 +200,7 @@ class follybeach_wq_data(wq_data):
       if variable == 'wind_speed':
         dir_id = self.xenia_obs_db.sensorExists('wind_from_direction', 'degrees_true', platform_handle, 1)
 
-      if sensor_id is not -1 and sensor_id is not None:
+      if sensor_id != -1 and sensor_id is not None:
         recs = self.xenia_obs_db.session.query(sl_multi_obs) \
           .filter(sl_multi_obs.m_date >= begin_date.strftime('%Y-%m-%dT%H:%M:%S')) \
           .filter(sl_multi_obs.m_date < end_date.strftime('%Y-%m-%dT%H:%M:%S')) \

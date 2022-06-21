@@ -15,6 +15,9 @@ from collections import OrderedDict
 import logging
 from yapsy.PluginManager import PluginManager
 from multiprocessing import Queue
+import multiprocessing
+multiprocessing.set_start_method('fork')
+
 import numpy as np
 
 from xgboost_model import xgb_model, xgb_ensemble

@@ -26,8 +26,8 @@ outputDirectory=/Users/danramage/Documents/workspace/WaterQuality/FollyBeach-Wat
 jsonfile=/Users/danramage/Documents/workspace/WaterQuality/FollyBeach-WaterQuality/data/test_outputs/beachAdvisoryResults.json
 
 [stationData]
-stationGeoJsonFile=/mnt/wq_feeds/follybeach/monitorstations/stationsGeoJSON.json
-stationWQHistoryFile=/mnt/wq_feeds/follybeach/monitorstations/historicalWQ.json
+stationGeoJsonFile=/Users/danramage/tmp/wq_feeds/sc_folly_beach/stationsGeoJSON.json
+stationWQHistoryFile=/Users/danramage/tmp/wq_feeds/sc_folly_beach/historicalWQ.json
 
 sitesFromCharlestonToInclude=Folly Beach;Folly River CHS Water Keeper
 

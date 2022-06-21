@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /usr/local/virtualenv/pyenv-2.7.11/bin/activate
+source /usr/local/virtualenv/pyenv-3.8.5/bin/activate
 
 cd /home/xeniaprod/scripts/FollyBeach-WaterQuality/scripts;
 

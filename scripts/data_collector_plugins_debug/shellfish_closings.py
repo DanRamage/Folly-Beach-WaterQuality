@@ -1,30 +1,30 @@
 import sys
 sys.path.append('../')
 sys.path.append('../../commonfiles/python')
+import data_collector_plugin as my_plugin
 import os
 import logging.config
-from data_collector_plugin import data_collector_plugin
 import traceback
 from datetime import datetime
 import time
 import requests
 import json
+import multiprocessing
+#multiprocessing.set_start_method('fork')
 
-class shellfish_closings(data_collector_plugin):
-
+class shellfish_closings(my_plugin.data_collector_plugin):
   def __init__(self):
-    data_collector_plugin.__init__(self)
+    my_plugin.data_collector_plugin.__init__(self)
 
     self.output_queue = None
 
   def initialize_plugin(self, **kwargs):
     try:
-        data_collector_plugin.initialize_plugin(self, **kwargs)
-        self.logging_client_cfg['disable_existing_loggers'] = True
+        #self.logging_client_cfg['disable_existing_loggers'] = True
         plugin_details = kwargs['details']
         self._log_conf = plugin_details.get("Settings", "logfile")
         self._output_file = plugin_details.get("Settings", "output_file")
-        self._rest_request = plugin_details.get("Settings", "rest_request")
+        self._rest_request = plugin_details.get("Settings", "rest_request", raw=True)
 
         return True
     except Exception as e:
@@ -64,13 +64,16 @@ class shellfish_closings(data_collector_plugin):
                             logger.debug("ID: %d Area: %s" % (obj_id, area))
                             shellfish_areas[area] = {'SF_AREA' : area,
                                                        'OBJECTID': obj_id,
-                                                       'Storm_Closure': attr['Storm_Closure'],
+                                                       'Storm_Closure': attr['Closures'],
                                                         'date_time_last_check': last_check.strftime('%Y-%m-%d %H:%M')}
 
             with open(self._output_file, 'w') as output_file:
                 output_file.write(json.dumps(shellfish_areas))
         else:
             logger.error("DHEC REST query failed, code: %d" % (req.status_code))
-        logger.debug("dhec_shellfish_closures run finished in %f seconds." % (time.time()-start_time))
     except Exception as e:
         logger.exception(e)
+    logger.debug("dhec_shellfish_closures run finished in %f seconds." % (time.time()-start_time))
+
+  def finalize(self):
+    return
