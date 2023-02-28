@@ -42,7 +42,7 @@ class xgb_model(EnterococcusPredictionTest):
         self.low_limit = kwargs.get('low_limit', 104.0)
         self.high_limit = kwargs.get('high_limit', 500.0)
 
-        self.data_used = OrderedDict()
+        self._data_used = OrderedDict()
         self._test_time = 0
         self.logger = logging.getLogger(type(self).__name__)
         self._result = None
@@ -117,7 +117,7 @@ class xgb_model(EnterococcusPredictionTest):
 
 class xgb_ensemble(wqEquations):
     def __init__(self, station, model_list):
-        self.station = station  # The station that this object represents.
+        self._station = station  # The station that this object represents.
         self._models = model_list
         self._ensemble_prediction = prediction_levels(prediction_levels.NO_TEST)
         self.logger = logging.getLogger(__name__)
