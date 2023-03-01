@@ -97,7 +97,7 @@ class email_output_plugin(data_collector_plugin):
             host=self.mailhost,
             user=self.user,
             password=self.password,
-            port=self.mailport,
+            port=self.port,
             use_tls=True,
           )
 
