@@ -67,6 +67,7 @@ class email_output_plugin(data_collector_plugin):
         self.subject = password_config_file.get("email_report_output_plugin", "subject")
         self.user = password_config_file.get("email_report_output_plugin", "user")
         self.password = password_config_file.get("email_report_output_plugin", "password")
+        self.port = password_config_file.get("email_report_output_plugin", "port")
 
         mytemplate = Template(filename=self.results_template)
         file_ext = os.path.splitext(self.result_outfile)
@@ -91,7 +92,15 @@ class email_output_plugin(data_collector_plugin):
           logger.debug("Emailing output file: %s" % (out_filename))
           subject = self.subject % (self.prediction_date)
           #Now send the email.
-          smtp = smtpClass(host=self.mailhost, user=self.user, password=self.password)
+          #smtp = smtpClass(host=self.mailhost, user=self.user, password=self.password)
+          smtp = smtpClass(
+            host=self.mailhost,
+            user=self.user,
+            password=self.password,
+            port=self.mailport,
+            use_tls=True,
+          )
+
           smtp.rcpt_to(self.toaddrs)
           smtp.from_addr(self.fromaddr)
           smtp.subject(subject)
