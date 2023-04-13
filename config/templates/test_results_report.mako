@@ -119,7 +119,7 @@
                             <th>Prediction Value</th>
                         </tr>
                         % for test_obj in site_data['models'].models:
-                            % if test_obj is not None and test_obj.results is not None:
+                            % if test_obj is not None and test_obj.result is not None:
                                 % if test_obj.result < test_obj.high_limit:
                                   <tr>
                                 % else:
@@ -167,7 +167,7 @@
                             <th>Data Used</th>
                         </tr>
                         % for test_obj in site_data['models'].models:
-                            % if test_obj is not None and test_obj.results is not None:
+                            % if test_obj is not None and test_obj.result is not None:
                                 % if test_obj.result < test_obj.high_limit:
                                   <tr>
                                 % else:
