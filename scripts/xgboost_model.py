@@ -6,7 +6,7 @@ import numpy as np
 from enterococcus_wq_test import EnterococcusPredictionTest
 from wq_prediction_tests import wqEquations
 import pickle
-
+from xgboost import XGBClassifier
 class prediction_levels(object):
   DISABLED = -2
   NO_TEST = -1
@@ -56,7 +56,12 @@ class xgb_model(EnterococcusPredictionTest):
             except Exception as e:
                 self._logger.exception(e)
                 raise e
-
+        elif model_file_type == 'json':
+            try:
+                self._xgb_model = XGBClassifier()
+                self._xgb_model.load_model(model_file)
+            except Exception as e:
+                self._logger.exception(e)
         self._prediction_level = prediction_levels(prediction_levels.NO_TEST)
         self._model_data = None
 
