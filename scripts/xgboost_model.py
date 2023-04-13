@@ -50,13 +50,13 @@ class xgb_model(EnterococcusPredictionTest):
         self.tide_settings = kwargs['tide_station_nfo']
         model_file = kwargs['model_file']
         model_file_type = kwargs['model_file_type']
-        if model_file_type == 'pickle':
+        if model_file.find(".dat") != -1:
             try:
                 self._xgb_model = pickle.load(open(model_file, "rb"))
             except Exception as e:
                 self._logger.exception(e)
                 raise e
-        elif model_file_type == 'json':
+        elif model_file.find(".json") != -1:
             try:
                 if self._classifier_type == 'binary':
                     self._xgb_model = XGBClassifier()
